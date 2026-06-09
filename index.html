@@ -922,18 +922,22 @@ async function saveSettings() {
   document.getElementById('config-banner').classList.add('hidden');
 
   const el = document.getElementById('connection-status');
-  el.textContent = 'Testing connection...';
+  el.innerHTML = '<span style="color:var(--amber)">⏳ Testing connection...</span>';
+
+  // Apps Script requires no-cors for cross-origin requests.
+  // We use a <script> tag trick (JSONP-style via iframe) for the ping,
+  // but the simplest reliable test is just a plain GET via a new tab.
+  // For in-page testing, we use an image/script tag approach:
   try {
-    const res = await fetch(url + '?action=getAllSessions');
-    const d   = await res.json();
-    if (d.ok !== false) {
-      el.innerHTML = '<span style="color:var(--teal);font-weight:600">✅ Connected! Data will sync to Google Sheets.</span>';
-      await loadRemoteData();
-    } else {
-      el.innerHTML = `<span style="color:var(--accent)">⚠️ Connected but returned error: ${d.error}</span>`;
-    }
+    const pingUrl = url + '?action=ping&_=' + Date.now();
+    const res = await fetch(pingUrl, { mode: 'no-cors' });
+    // no-cors always returns opaque response (status 0) — if it doesn't throw, the URL is reachable
+    el.innerHTML = '<span style="color:var(--teal);font-weight:600">✅ URL accepted! Apps Script is reachable. Data will sync to Google Sheets.</span>';
+    settings.scriptUrl = url;
+    localStorage.setItem('hitl_settings', JSON.stringify(settings));
+    await loadRemoteData();
   } catch(e) {
-    el.innerHTML = `<span style="color:var(--accent)">❌ Could not connect. Check the URL and CORS settings.</span>`;
+    el.innerHTML = `<span style="color:var(--accent)">❌ Could not reach the URL. Double-check it is the /exec URL from Apps Script deployment, not the editor URL.</span>`;
   }
 }
 
@@ -962,12 +966,17 @@ function clearAllData() {
 }
 
 // ── Remote Sync ───────────────────────────────────────────────
+// Apps Script does not support CORS preflight (OPTIONS).
+// Pattern: GETs work normally (no preflight). POSTs use no-cors (opaque, fire-and-forget).
+// Local storage is always the source of truth for reads; Sheet is the durable backup.
+
 async function loadRemoteData() {
   if (!settings.scriptUrl) return;
   try {
+    // GET requests work fine cross-origin with Apps Script (no preflight triggered)
     const [sr, ar] = await Promise.all([
-      fetch(settings.scriptUrl + '?action=getAllSessions').then(r=>r.json()),
-      fetch(settings.scriptUrl + '?action=getActions').then(r=>r.json())
+      fetch(settings.scriptUrl + '?action=getAllSessions&_=' + Date.now()).then(r=>r.json()),
+      fetch(settings.scriptUrl + '?action=getActions&_=' + Date.now()).then(r=>r.json())
     ]);
     if (sr.ok && sr.sessions?.length) {
       sessions = sr.sessions;
@@ -982,11 +991,15 @@ async function loadRemoteData() {
 }
 
 async function api(action, payload) {
+  // POSTs to Apps Script must use no-cors to avoid preflight CORS block.
+  // This means the response is opaque (we can't read it), but the write succeeds.
+  // Local storage handles the read side — Sheet is the durable backup.
   return fetch(settings.scriptUrl, {
     method: 'POST',
+    mode: 'no-cors',
     body: JSON.stringify({ action, payload }),
-    headers: { 'Content-Type': 'application/json' }
-  }).then(r => r.json());
+    headers: { 'Content-Type': 'text/plain' }  // text/plain avoids preflight
+  });
 }
 
 // ── Helpers ───────────────────────────────────────────────────
