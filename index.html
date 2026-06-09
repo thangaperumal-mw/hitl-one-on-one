@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HITL 1-on-1 Tool — Meltwater</title>
+<style>
+  :root {
+    --brand:       #0f3460;
+    --brand-light: #16213e;
+    --accent:      #e94560;
+    --accent-soft: #fff0f2;
+    --teal:        #0d9e75;
+    --teal-soft:   #e8f9f4;
+    --amber:       #d97706;
+    --amber-soft:  #fffbeb;
+    --surface:     #ffffff;
+    --bg:          #f5f6fa;
+    --border:      #e2e4ea;
+    --text:        #1a1d2e;
+    --muted:       #6b7280;
+    --radius:      10px;
+    --radius-lg:   16px;
+    --shadow:      0 1px 4px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.05);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+  /* ── Nav ── */
+  nav { background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 56px; position: sticky; top: 0; z-index: 100; }
+  nav .logo { font-size: 15px; font-weight: 700; letter-spacing: .5px; display: flex; align-items: center; gap: 10px; }
+  nav .logo span { opacity: .5; font-weight: 400; }
+  nav .nav-links { display: flex; gap: 4px; }
+  nav .nav-links button { background: none; border: none; color: rgba(255,255,255,.7); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all .15s; }
+  nav .nav-links button.active, nav .nav-links button:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+  /* ── Layout ── */
+  main { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── Cards ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow); }
+  .card + .card { margin-top: 1rem; }
+
+  /* ── Page: Dashboard ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; text-align: center; }
+  .stat-card .num { font-size: 32px; font-weight: 700; color: var(--brand); }
+  .stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+  .member-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; cursor: pointer; transition: all .15s; }
+  .member-card:hover { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(15,52,96,.08); }
+  .member-card .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; margin-bottom: 10px; }
+  .member-card .name { font-weight: 600; font-size: 14px; }
+  .member-card .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+  .badge-done    { background: var(--teal-soft); color: var(--teal); }
+  .badge-pending { background: var(--amber-soft); color: var(--amber); }
+  .badge-new     { background: #eff6ff; color: #2563eb; }
+
+  .rating-bar { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .rating-bar .fill { height: 6px; border-radius: 3px; background: var(--brand); transition: width .4s; }
+  .rating-bar .track { flex: 1; height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+
+  /* ── Section Headings ── */
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .section-head h2 { font-size: 16px; font-weight: 700; color: var(--brand); }
+  h3.agenda-title { font-size: 13px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: .6px; margin-bottom: .75rem; display: flex; align-items: center; gap: 8px; }
+  h3.agenda-title .step { width: 22px; height: 22px; background: var(--brand); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+
+  /* ── Form ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-grid.one { grid-template-columns: 1fr; }
+  @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .field input, .field select, .field textarea { border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; font-size: 13px; font-family: inherit; outline: none; transition: border .15s; background: var(--bg); color: var(--text); }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brand); background: #fff; }
+  .field textarea { resize: vertical; min-height: 70px; }
+  .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+  /* Rating stars */
+  .star-row { display: flex; gap: 6px; margin-top: 4px; }
+  .star { width: 32px; height: 32px; border: 1.5px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: all .15s; color: var(--muted); }
+  .star.on { border-color: var(--amber); background: var(--amber-soft); color: var(--amber); }
+
+  /* Mood selector */
+  .mood-row { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .mood-btn { border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 14px; cursor: pointer; font-size: 13px; background: var(--bg); transition: all .15s; }
+  .mood-btn.on { border-color: var(--teal); background: var(--teal-soft); color: var(--teal); font-weight: 600; }
+
+  /* Goal tracking */
+  .goal-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); }
+  .goal-row + .goal-row { margin-top: 8px; }
+  .goal-row textarea { flex: 1; border: none; background: transparent; font-size: 13px; font-family: inherit; outline: none; resize: none; min-height: 40px; }
+  .goal-row select { border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 12px; background: #fff; }
+
+  /* Action items */
+  .action-item { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); }
+  .action-item + .action-item { margin-top: 6px; }
+  .action-item .desc { font-size: 13px; }
+  .action-item .owner-tag { font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-weight: 600; }
+  .action-item .due { font-size: 11px; color: var(--muted); }
+  .action-item .status-sel { font-size: 12px; border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; background: #fff; }
+  .action-item.done .desc { text-decoration: line-through; color: var(--muted); }
+
+  /* Buttons */
+  .btn { border: none; border-radius: var(--radius); padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:hover { background: #0c2d57; }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-accent:hover { background: #c73652; }
+  .btn-ghost { background: transparent; color: var(--brand); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg); }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+  .btn-teal { background: var(--teal); color: #fff; }
+
+  /* History panel */
+  .history-entry { border-left: 3px solid var(--border); padding: .75rem 1rem; margin-bottom: .75rem; border-radius: 0 var(--radius) var(--radius) 0; background: var(--bg); }
+  .history-entry.q1 { border-color: var(--teal); }
+  .history-entry.q2 { border-color: var(--accent); }
+  .history-entry.q3 { border-color: var(--amber); }
+  .history-entry .qbadge { font-size: 11px; font-weight: 700; }
+
+  /* Toast */
+  #toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--brand); color: #fff; padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; transform: translateY(80px); opacity: 0; transition: all .3s; z-index: 999; }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+
+  /* Insights */
+  .insight-row { display: flex; align-items: center; justify-content: space-between; padding: .6rem 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .insight-row:last-child { border-bottom: none; }
+  .theme-tag { font-size: 12px; background: #eff6ff; color: #2563eb; padding: 2px 10px; border-radius: 12px; font-weight: 600; }
+
+  /* Progress arc */
+  .arc-wrap { display: flex; align-items: center; gap: 1rem; }
+  svg.arc { width: 64px; height: 64px; }
+  .arc-label { font-size: 22px; font-weight: 700; color: var(--brand); }
+  .arc-sub { font-size: 12px; color: var(--muted); }
+
+  /* Tabs inside form */
+  .form-tabs { display: flex; gap: 4px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .form-tab { border: 1px solid var(--border); border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 600; cursor: pointer; background: var(--bg); transition: all .15s; }
+  .form-tab.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+  /* Utility */
+  .flex { display: flex; }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .mt-1 { margin-top: .5rem; }
+  .mt-2 { margin-top: 1rem; }
+  .mt-3 { margin-top: 1.5rem; }
+  .text-muted { color: var(--muted); font-size: 12px; }
+  .hidden { display: none !important; }
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+  .empty-state svg { opacity: .3; margin-bottom: 1rem; }
+
+  /* Config banner */
+  #config-banner { background: #fff3cd; border: 1px solid #ffc107; border-radius: var(--radius); padding: .75rem 1rem; margin-bottom: 1rem; font-size: 13px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  #config-banner.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="white" stroke-width="1.5"/><path d="M6 10h8M10 6v8" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+    HITL 1-on-1 Tool <span>/ Meltwater</span>
+  </div>
+  <div class="nav-links">
+    <button class="active" onclick="showPage('dashboard')">Dashboard</button>
+    <button onclick="showPage('form')">New Session</button>
+    <button onclick="showPage('actions')">Action Items</button>
+    <button onclick="showPage('insights')">Insights</button>
+    <button onclick="showPage('settings')">Settings</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ DASHBOARD ══════════════════════ -->
+<div id="page-dashboard" class="page active">
+  <div id="config-banner">
+    ⚠️ Google Sheets not connected. Data will be saved locally only. Go to <strong>Settings</strong> to add your Apps Script URL.
+    <button class="btn btn-sm btn-ghost" onclick="showPage('settings')">Open Settings</button>
+  </div>
+
+  <div class="flex-between" style="margin-bottom:1.5rem">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:var(--brand)">H1 2026 — 1-on-1 Sessions</h1>
+      <p class="text-muted mt-1">All leads · All members</p>
+    </div>
+    <button class="btn btn-accent" onclick="showPage('form')">+ New Session</button>
+  </div>
+
+  <div class="stats-grid" id="stats-grid">
+    <div class="stat-card"><div class="num" id="stat-total">0</div><div class="lbl">Total Sessions</div></div>
+    <div class="stat-card"><div class="num" id="stat-done">0</div><div class="lbl">Completed</div></div>
+    <div class="stat-card"><div class="num" id="stat-avg">—</div><div class="lbl">Avg Rating</div></div>
+    <div class="stat-card"><div class="num" id="stat-actions">0</div><div class="lbl">Open Actions</div></div>
+  </div>
+
+  <div class="card">
+    <div class="section-head">
+      <h2>Team Members</h2>
+      <input type="text" id="search-members" placeholder="Search members..." style="width:200px;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;outline:none;" oninput="renderMemberCards()" />
+    </div>
+    <div class="members-grid" id="members-grid">
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <p>No sessions yet. Start your first 1-on-1.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ FORM ══════════════════════ -->
+<div id="page-form" class="page">
+  <div class="flex-between" style="margin-bottom:1.5rem">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:var(--brand)">New 1-on-1 Session</h1>
+      <p class="text-muted mt-1">Fill all sections during or after the meeting</p>
+    </div>
+    <button class="btn btn-ghost" onclick="showPage('dashboard')">← Back</button>
+  </div>
+
+  <!-- History Panel (shown when member selected) -->
+  <div id="history-panel" class="card hidden" style="margin-bottom:1rem; border-left: 4px solid var(--teal);">
+    <div class="flex-between" style="margin-bottom:.75rem">
+      <h2 style="font-size:14px;font-weight:700;color:var(--teal)">📋 Historical Context</h2>
+      <span class="text-muted" id="history-member-name"></span>
+    </div>
+    <div id="history-entries"></div>
+  </div>
+
+  <div class="form-tabs">
+    <button class="form-tab active" onclick="switchTab(0)">① Meeting Info</button>
+    <button class="form-tab" onclick="switchTab(1)">② Performance</button>
+    <button class="form-tab" onclick="switchTab(2)">③ Team & Goals</button>
+    <button class="form-tab" onclick="switchTab(3)">④ Rating & Plans</button>
+    <button class="form-tab" onclick="switchTab(4)">⑤ Action Items</button>
+  </div>
+
+  <!-- Tab 0: Meeting Info -->
+  <div class="card tab-panel" data-tab="0">
+    <h3 class="agenda-title"><span class="step">1</span> Meeting Information</h3>
+    <div class="form-grid">
+      <div class="field">
+        <label>Lead Name</label>
+        <input type="text" id="f-lead" placeholder="Your name" />
+      </div>
+      <div class="field">
+        <label>Member Name</label>
+        <input type="text" id="f-member" placeholder="Team member name" oninput="onMemberInput()" />
+      </div>
+      <div class="field">
+        <label>Meeting Date</label>
+        <input type="date" id="f-date" />
+      </div>
+      <div class="field">
+        <label>Quarter</label>
+        <select id="f-quarter">
+          <option>H1 2026</option>
+          <option>Q3 2026</option>
+          <option>Q4 2026</option>
+          <option>H1 2027</option>
+        </select>
+      </div>
+    </div>
+    <hr class="divider" />
+    <div class="field">
+      <label>Member's Mood / Energy at Start of Meeting</label>
+      <div class="mood-row" id="mood-row">
+        <button class="mood-btn" onclick="setMood('Very Positive')">😊 Very Positive</button>
+        <button class="mood-btn" onclick="setMood('Positive')">🙂 Positive</button>
+        <button class="mood-btn" onclick="setMood('Neutral')">😐 Neutral</button>
+        <button class="mood-btn" onclick="setMood('Concerned')">😟 Concerned</button>
+        <button class="mood-btn" onclick="setMood('Disengaged')">😔 Disengaged</button>
+      </div>
+    </div>
+    <div class="flex" style="justify-content:flex-end;margin-top:1.25rem">
+      <button class="btn btn-primary" onclick="switchTab(1)">Next →</button>
+    </div>
+  </div>
+
+  <!-- Tab 1: Performance -->
+  <div class="card tab-panel hidden" data-tab="1">
+    <h3 class="agenda-title"><span class="step">2</span> Things Worked Out Well — Positives</h3>
+    <div class="sub-grid">
+      <div class="field"><label>Efficiency</label><textarea id="f-pos-eff" placeholder="What went well in efficiency?"></textarea></div>
+      <div class="field"><label>Quality</label><textarea id="f-pos-qual" placeholder="Quality wins this period?"></textarea></div>
+      <div class="field"><label>Leaves & Attendance</label><textarea id="f-pos-leave" placeholder="Good attendance patterns?"></textarea></div>
+      <div class="field"><label>Breaks & Habits</label><textarea id="f-pos-break" placeholder="Positive habits observed?"></textarea></div>
+    </div>
+
+    <hr class="divider" />
+    <h3 class="agenda-title"><span class="step">3</span> Things Need to Improve — Shortcomings</h3>
+    <div class="sub-grid">
+      <div class="field"><label>Efficiency</label><textarea id="f-sc-eff" placeholder="Efficiency gaps to address?"></textarea></div>
+      <div class="field"><label>Quality</label><textarea id="f-sc-qual" placeholder="Quality areas to improve?"></textarea></div>
+      <div class="field"><label>Leaves & Attendance</label><textarea id="f-sc-leave" placeholder="Attendance concerns?"></textarea></div>
+      <div class="field"><label>Breaks & Habits</label><textarea id="f-sc-break" placeholder="Habits that need correction?"></textarea></div>
+    </div>
+    <div class="flex" style="justify-content:space-between;margin-top:1.25rem">
+      <button class="btn btn-ghost" onclick="switchTab(0)">← Back</button>
+      <button class="btn btn-primary" onclick="switchTab(2)">Next →</button>
+    </div>
+  </div>
+
+  <!-- Tab 2: Team & Goals -->
+  <div class="card tab-panel hidden" data-tab="2">
+    <h3 class="agenda-title"><span class="step">4</span> Process, Operations & Team — Their Views</h3>
+    <div class="form-grid one">
+      <div class="field"><label>Process Comments</label><textarea id="f-process" placeholder="Their views on current processes..."></textarea></div>
+      <div class="field"><label>Operations Comments</label><textarea id="f-ops" placeholder="Their views on daily operations..."></textarea></div>
+      <div class="field"><label>Team Dynamics Comments</label><textarea id="f-team" placeholder="Their thoughts on team collaboration..."></textarea></div>
+    </div>
+
+    <hr class="divider" />
+    <h3 class="agenda-title"><span class="step">5</span> Goal Tracking — GPS Goals Status</h3>
+    <div id="goals-list"></div>
+    <button class="btn btn-ghost btn-sm mt-1" onclick="addGoalRow()">+ Add Goal</button>
+
+    <div class="flex" style="justify-content:space-between;margin-top:1.25rem">
+      <button class="btn btn-ghost" onclick="switchTab(1)">← Back</button>
+      <button class="btn btn-primary" onclick="switchTab(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- Tab 3: Rating & Plans -->
+  <div class="card tab-panel hidden" data-tab="3">
+    <h3 class="agenda-title"><span class="step">6</span> Current Rating (Jan–May Performance)</h3>
+    <div class="field">
+      <label>Rating (1 = Needs Improvement · 5 = Exceptional)</label>
+      <div class="star-row" id="star-row">
+        <div class="star" onclick="setRating(1)">1</div>
+        <div class="star" onclick="setRating(2)">2</div>
+        <div class="star" onclick="setRating(3)">3</div>
+        <div class="star" onclick="setRating(4)">4</div>
+        <div class="star" onclick="setRating(5)">5</div>
+      </div>
+      <input type="hidden" id="f-rating" value="" />
+    </div>
+
+    <hr class="divider" />
+    <h3 class="agenda-title"><span class="step">7</span> Personal Goals & Support</h3>
+    <div class="form-grid">
+      <div class="field"><label>Personal Goals Shared</label><textarea id="f-personal-goals" placeholder="Goals they want to achieve personally or professionally..."></textarea></div>
+      <div class="field"><label>Support Needed from Lead/Team</label><textarea id="f-personal-support" placeholder="What support or resources do they need?"></textarea></div>
+    </div>
+
+    <hr class="divider" />
+    <h3 class="agenda-title"><span class="step">8</span> One Change to Improve More</h3>
+    <div class="field">
+      <textarea id="f-one-change" placeholder="What single change (process, operation, or team) would make the biggest difference for them?" style="min-height:80px"></textarea>
+    </div>
+
+    <hr class="divider" />
+    <h3 class="agenda-title" style="margin-top:.5rem"><span class="step">✓</span> Overall Feedback</h3>
+    <div class="field">
+      <label>Feedback on Process, Operations, Team, Leads & Manager</label>
+      <textarea id="f-overall" placeholder="Their overall feedback covering all areas..." style="min-height:90px"></textarea>
+    </div>
+
+    <div class="flex" style="justify-content:space-between;margin-top:1.25rem">
+      <button class="btn btn-ghost" onclick="switchTab(2)">← Back</button>
+      <button class="btn btn-primary" onclick="switchTab(4)">Next →</button>
+    </div>
+  </div>
+
+  <!-- Tab 4: Action Items -->
+  <div class="card tab-panel hidden" data-tab="4">
+    <h3 class="agenda-title"><span class="step">✓</span> Action Items from This Meeting</h3>
+    <p class="text-muted" style="margin-bottom:1rem">Capture commitments made by both lead and member. These will be tracked and carried forward.</p>
+
+    <div id="new-action-list"></div>
+    <button class="btn btn-ghost btn-sm mt-1" onclick="addActionRow()">+ Add Action Item</button>
+
+    <hr class="divider" />
+    <div class="flex" style="justify-content:space-between;align-items:center;margin-top:.5rem">
+      <button class="btn btn-ghost" onclick="switchTab(3)">← Back</button>
+      <button class="btn btn-accent" onclick="submitSession()">💾 Save Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ ACTION ITEMS ══════════════════════ -->
+<div id="page-actions" class="page">
+  <div class="flex-between" style="margin-bottom:1.5rem">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:var(--brand)">Action Item Tracker</h1>
+      <p class="text-muted mt-1">All commitments across team members</p>
+    </div>
+    <div class="flex gap-8">
+      <select id="action-filter-status" onchange="renderActions()" style="border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;outline:none;">
+        <option value="">All Status</option>
+        <option value="Open">Open</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Done">Done</option>
+      </select>
+      <select id="action-filter-member" onchange="renderActions()" style="border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;outline:none;">
+        <option value="">All Members</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="actions-list"><div class="empty-state"><p>No action items yet.</p></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ INSIGHTS ══════════════════════ -->
+<div id="page-insights" class="page">
+  <div class="flex-between" style="margin-bottom:1.5rem">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:var(--brand)">Team Insights</h1>
+      <p class="text-muted mt-1">Patterns across all 1-on-1 sessions</p>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+    <div class="card">
+      <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Rating Distribution</h2>
+      <div id="rating-dist"></div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Mood Overview</h2>
+      <div id="mood-dist"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Common Themes in "One Change" Requests</h2>
+    <div id="themes-list"><div class="empty-state"><p>Complete more sessions to see themes.</p></div></div>
+  </div>
+
+  <div class="card" style="margin-top:1rem">
+    <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Action Item Health</h2>
+    <div id="action-health"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SETTINGS ══════════════════════ -->
+<div id="page-settings" class="page">
+  <h1 style="font-size:20px;font-weight:700;color:var(--brand);margin-bottom:1.5rem">Settings</h1>
+
+  <div class="card">
+    <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Google Sheets Connection</h2>
+    <div class="field">
+      <label>Apps Script Web App URL</label>
+      <input type="url" id="s-url" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;" />
+    </div>
+    <p class="text-muted mt-1">Paste the URL from your deployed Google Apps Script. See <strong>Code.gs</strong> for setup instructions.</p>
+    <div class="flex gap-8 mt-2">
+      <button class="btn btn-primary" onclick="saveSettings()">Save & Test Connection</button>
+      <button class="btn btn-ghost" onclick="clearSettings()">Clear</button>
+    </div>
+    <div id="connection-status" style="margin-top:.75rem;font-size:13px;"></div>
+  </div>
+
+  <div class="card" style="margin-top:1rem">
+    <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Default Lead Name</h2>
+    <div class="field">
+      <label>Your Name (pre-filled in new sessions)</label>
+      <input type="text" id="s-lead-name" placeholder="e.g. TP" />
+    </div>
+    <button class="btn btn-primary mt-2" onclick="saveLeadName()">Save</button>
+  </div>
+
+  <div class="card" style="margin-top:1rem;border-color:#fecaca;">
+    <h2 style="font-size:14px;font-weight:700;margin-bottom:.5rem;color:#dc2626;">Danger Zone</h2>
+    <p class="text-muted">Clear all locally stored data. This cannot be undone.</p>
+    <button class="btn btn-sm mt-1" style="background:#dc2626;color:#fff" onclick="clearAllData()">Clear All Local Data</button>
+  </div>
+</div>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+// ── State ────────────────────────────────────────────────────
+let sessions   = JSON.parse(localStorage.getItem('hitl_sessions')   || '[]');
+let actions    = JSON.parse(localStorage.getItem('hitl_actions')    || '[]');
+let settings   = JSON.parse(localStorage.getItem('hitl_settings')   || '{}');
+let goalRows   = [];
+let actionRows = [];
+let selectedMood   = '';
+let selectedRating = 0;
+let currentTab     = 0;
+
+// ── Boot ─────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  if (settings.leadName) document.getElementById('f-lead').value = settings.leadName;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('f-date').value = today;
+
+  if (!settings.scriptUrl) {
+    document.getElementById('config-banner').classList.remove('hidden');
+  } else {
+    document.getElementById('config-banner').classList.add('hidden');
+    document.getElementById('s-url').value = settings.scriptUrl;
+    loadRemoteData();
+  }
+  if (settings.leadName) document.getElementById('s-lead-name').value = settings.leadName;
+
+  addGoalRow();
+  addActionRow();
+  renderDashboard();
+  renderActions();
+  renderInsights();
+});
+
+// ── Navigation ───────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const btns = document.querySelectorAll('.nav-links button');
+  const map  = ['dashboard','form','actions','insights','settings'];
+  btns[map.indexOf(name)]?.classList.add('active');
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'actions')   renderActions();
+  if (name === 'insights')  renderInsights();
+}
+
+function switchTab(n) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.form-tab').forEach((b, i) => b.classList.toggle('active', i === n));
+  document.querySelector(`.tab-panel[data-tab="${n}"]`).classList.remove('hidden');
+  currentTab = n;
+}
+
+// ── Dashboard ────────────────────────────────────────────────
+function renderDashboard() {
+  const total    = sessions.length;
+  const avgRaw   = sessions.filter(s => s.current_rating).map(s => +s.current_rating);
+  const avg      = avgRaw.length ? (avgRaw.reduce((a,b)=>a+b,0)/avgRaw.length).toFixed(1) : '—';
+  const openActs = actions.filter(a => a.status !== 'Done').length;
+
+  document.getElementById('stat-total').textContent   = total;
+  document.getElementById('stat-done').textContent    = total;
+  document.getElementById('stat-avg').textContent     = avg;
+  document.getElementById('stat-actions').textContent = openActs;
+
+  const search  = (document.getElementById('search-members')?.value || '').toLowerCase();
+  const grid    = document.getElementById('members-grid');
+
+  const byMember = {};
+  sessions.forEach(s => {
+    if (!byMember[s.memberName]) byMember[s.memberName] = [];
+    byMember[s.memberName].push(s);
+  });
+
+  const members = Object.keys(byMember).filter(m => m.toLowerCase().includes(search));
+  if (!members.length) {
+    grid.innerHTML = `<div class="empty-state"><p>No sessions yet. Start your first 1-on-1.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = members.map(m => {
+    const all     = byMember[m];
+    const latest  = all[all.length - 1];
+    const rating  = latest.current_rating || 0;
+    const pct     = (rating / 5 * 100).toFixed(0);
+    const initials= m.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const openA   = actions.filter(a => a.memberName === m && a.status !== 'Done').length;
+    return `
+      <div class="member-card" onclick="openMemberSession('${m}')">
+        <div class="avatar">${initials}</div>
+        <div class="name">${m}</div>
+        <div class="meta">${latest.leadName || ''} · ${latest.quarter || ''}</div>
+        <div class="rating-bar" style="margin-top:10px">
+          <div style="font-size:11px;color:var(--muted);width:40px">Rating</div>
+          <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+          <div style="font-size:11px;font-weight:700;color:var(--brand);width:16px">${rating || '—'}</div>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+          <span class="badge badge-done">Session done</span>
+          ${openA ? `<span class="badge badge-pending">${openA} open actions</span>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderMemberCards() { renderDashboard(); }
+
+function openMemberSession(name) {
+  resetForm();
+  document.getElementById('f-member').value = name;
+  onMemberInput();
+  showPage('form');
+}
+
+// ── Member History ────────────────────────────────────────────
+function onMemberInput() {
+  const name = document.getElementById('f-member').value.trim();
+  const past  = sessions.filter(s => s.memberName === name);
+  const panel = document.getElementById('history-panel');
+  if (!past.length) { panel.classList.add('hidden'); return; }
+
+  panel.classList.remove('hidden');
+  document.getElementById('history-member-name').textContent = name;
+
+  const qColors = { 'H1 2026': 'q1', 'Q3 2026': 'q2', 'Q4 2026': 'q3' };
+  document.getElementById('history-entries').innerHTML = past.slice(-3).reverse().map(s => {
+    const qc = qColors[s.quarter] || 'q1';
+    const openA = actions.filter(a => a.memberName === name && a.status !== 'Done' && a.sessionId !== s.sessionId);
+    return `
+      <div class="history-entry ${qc}">
+        <div class="flex-between" style="margin-bottom:4px">
+          <span class="qbadge">${s.quarter}</span>
+          <span class="text-muted">${s.meetingDate} · Lead: ${s.leadName}</span>
+        </div>
+        <div style="font-size:13px;margin-bottom:4px">
+          <strong>Rating:</strong> ${s.current_rating || '—'}/5 &nbsp;·&nbsp;
+          <strong>Mood:</strong> ${s.mood || '—'} &nbsp;·&nbsp;
+          <strong>Goal Status:</strong> ${s.goal_status || '—'}
+        </div>
+        ${s.one_change ? `<div style="font-size:12px;color:var(--muted)">💡 Requested change: ${s.one_change.slice(0,120)}${s.one_change.length>120?'…':''}</div>` : ''}
+        ${openA.length ? `<div style="margin-top:4px"><span class="badge badge-pending">${openA.length} open actions from this period</span></div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+// ── Mood & Rating ─────────────────────────────────────────────
+function setMood(m) {
+  selectedMood = m;
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('on', b.textContent.trim().includes(m.replace('Very ',''))));
+}
+function setRating(n) {
+  selectedRating = n;
+  document.getElementById('f-rating').value = n;
+  document.querySelectorAll('.star').forEach((s,i) => s.classList.toggle('on', i < n));
+}
+
+// ── Goal Rows ─────────────────────────────────────────────────
+function addGoalRow() {
+  const id  = 'goal_' + Date.now();
+  goalRows.push(id);
+  const div = document.createElement('div');
+  div.className = 'goal-row';
+  div.id = id;
+  div.innerHTML = `
+    <textarea placeholder="GPS goal description..." style="min-height:36px;height:36px"></textarea>
+    <select>
+      <option value="">Status</option>
+      <option>On Track</option>
+      <option>At Risk</option>
+      <option>Delayed</option>
+      <option>Completed</option>
+    </select>
+    <button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeGoalRow('${id}')">✕</button>`;
+  document.getElementById('goals-list').appendChild(div);
+}
+function removeGoalRow(id) {
+  document.getElementById(id)?.remove();
+  goalRows = goalRows.filter(r => r !== id);
+}
+function collectGoals() {
+  const rows = document.querySelectorAll('.goal-row');
+  return Array.from(rows).map(r => ({
+    goal: r.querySelector('textarea').value,
+    status: r.querySelector('select').value
+  })).filter(g => g.goal);
+}
+
+// ── Action Rows (in form) ─────────────────────────────────────
+function addActionRow() {
+  const id  = 'arow_' + Date.now();
+  actionRows.push(id);
+  const div = document.createElement('div');
+  div.className = 'action-item';
+  div.id = id;
+  div.style = 'grid-template-columns:1fr auto auto auto auto';
+  div.innerHTML = `
+    <input type="text" placeholder="Action item description..." style="border:none;background:transparent;font-size:13px;outline:none;width:100%" />
+    <select style="border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:12px;background:#fff">
+      <option>Lead</option><option>Member</option><option>Both</option>
+    </select>
+    <input type="date" style="border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:12px;width:120px" />
+    <select class="status-sel" style="border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:12px;background:#fff">
+      <option>Open</option><option>In Progress</option><option>Done</option>
+    </select>
+    <button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeActionRow('${id}')">✕</button>`;
+  document.getElementById('new-action-list').appendChild(div);
+}
+function removeActionRow(id) {
+  document.getElementById(id)?.remove();
+  actionRows = actionRows.filter(r => r !== id);
+}
+function collectNewActions(sessionId, memberName, leadName, quarter, meetingDate) {
+  const rows = document.querySelectorAll('#new-action-list .action-item');
+  return Array.from(rows).map(r => {
+    const inputs = r.querySelectorAll('input,select');
+    return {
+      actionId:    'A_' + Date.now() + Math.random(),
+      sessionId,
+      memberName,
+      leadName,
+      quarter,
+      meetingDate,
+      description: inputs[0].value,
+      owner:       inputs[1].value,
+      dueDate:     inputs[2].value,
+      status:      inputs[3].value,
+      createdAt:   new Date().toISOString()
+    };
+  }).filter(a => a.description);
+}
+
+// ── Submit Session ────────────────────────────────────────────
+async function submitSession() {
+  const lead   = document.getElementById('f-lead').value.trim();
+  const member = document.getElementById('f-member').value.trim();
+  if (!lead || !member) { toast('Please fill Lead and Member names.'); switchTab(0); return; }
+
+  const goals   = collectGoals();
+  const sid     = 'S_' + Date.now();
+  const quarter = document.getElementById('f-quarter').value;
+  const date    = document.getElementById('f-date').value;
+
+  const payload = {
+    sessionId:               sid,
+    quarter,
+    leadName:                lead,
+    memberName:              member,
+    meetingDate:             date,
+    mood:                    selectedMood,
+    positives_efficiency:    document.getElementById('f-pos-eff').value,
+    positives_quality:       document.getElementById('f-pos-qual').value,
+    positives_leaves:        document.getElementById('f-pos-leave').value,
+    positives_breaks:        document.getElementById('f-pos-break').value,
+    shortcomings_efficiency: document.getElementById('f-sc-eff').value,
+    shortcomings_quality:    document.getElementById('f-sc-qual').value,
+    shortcomings_leaves:     document.getElementById('f-sc-leave').value,
+    shortcomings_breaks:     document.getElementById('f-sc-break').value,
+    process_views:           document.getElementById('f-process').value,
+    operations_views:        document.getElementById('f-ops').value,
+    team_views:              document.getElementById('f-team').value,
+    goal_status:             goals.map(g=>g.status).join(', '),
+    goal_comments:           JSON.stringify(goals),
+    current_rating:          selectedRating,
+    personal_goals:          document.getElementById('f-personal-goals').value,
+    personal_support:        document.getElementById('f-personal-support').value,
+    one_change:              document.getElementById('f-one-change').value,
+    overall_feedback:        document.getElementById('f-overall').value,
+    timestamp:               new Date().toISOString()
+  };
+
+  // Save locally
+  sessions.push(payload);
+  localStorage.setItem('hitl_sessions', JSON.stringify(sessions));
+
+  // Save action items locally
+  const newActs = collectNewActions(sid, member, lead, quarter, date);
+  actions.push(...newActs);
+  localStorage.setItem('hitl_actions', JSON.stringify(actions));
+
+  // Push to Google Sheets if connected
+  if (settings.scriptUrl) {
+    try {
+      await api('saveSession', payload);
+      for (const a of newActs) await api('saveAction', a);
+    } catch(e) { console.warn('Sheet sync failed', e); }
+  }
+
+  toast('Session saved! ✅');
+  resetForm();
+  showPage('dashboard');
+}
+
+// ── Actions Page ──────────────────────────────────────────────
+function renderActions() {
+  const statusF = document.getElementById('action-filter-status')?.value || '';
+  const memberF = document.getElementById('action-filter-member')?.value || '';
+
+  // Populate member filter
+  const members = [...new Set(actions.map(a => a.memberName))];
+  const sel = document.getElementById('action-filter-member');
+  if (sel) {
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">All Members</option>' + members.map(m => `<option ${m===cur?'selected':''}>${m}</option>`).join('');
+  }
+
+  let filtered = actions;
+  if (statusF) filtered = filtered.filter(a => a.status === statusF);
+  if (memberF) filtered = filtered.filter(a => a.memberName === memberF);
+
+  if (!filtered.length) {
+    document.getElementById('actions-list').innerHTML = '<div class="empty-state"><p>No action items found.</p></div>';
+    return;
+  }
+
+  document.getElementById('actions-list').innerHTML = filtered.map((a,idx) => `
+    <div class="action-item ${a.status==='Done'?'done':''}" id="act_${idx}">
+      <div class="desc">
+        <div style="font-weight:600;margin-bottom:2px">${a.description}</div>
+        <div style="font-size:11px;color:var(--muted)">${a.memberName} · ${a.quarter || ''} · ${a.meetingDate || ''}</div>
+      </div>
+      <span class="owner-tag">${a.owner || 'Lead'}</span>
+      <span class="due">${a.dueDate || 'No due date'}</span>
+      <select class="status-sel" onchange="updateActionStatus(${idx}, this.value)">
+        <option ${a.status==='Open'?'selected':''}>Open</option>
+        <option ${a.status==='In Progress'?'selected':''}>In Progress</option>
+        <option ${a.status==='Done'?'selected':''}>Done</option>
+      </select>
+    </div>`).join('');
+}
+
+async function updateActionStatus(idx, status) {
+  const filtStat = document.getElementById('action-filter-status')?.value || '';
+  const filtMem  = document.getElementById('action-filter-member')?.value  || '';
+  let filtered   = actions;
+  if (filtStat) filtered = filtered.filter(a => a.status === filtStat || true);
+  if (filtMem)  filtered = filtered.filter(a => a.memberName === filtMem);
+
+  // Find in full list
+  const a = filtered[idx];
+  if (!a) return;
+  const realIdx = actions.findIndex(x => x.actionId === a.actionId);
+  if (realIdx < 0) return;
+  actions[realIdx].status = status;
+  localStorage.setItem('hitl_actions', JSON.stringify(actions));
+
+  if (settings.scriptUrl) {
+    try { await api('updateAction', { actionId: a.actionId, status }); } catch(e) {}
+  }
+  renderActions();
+  renderDashboard();
+  toast('Action updated');
+}
+
+// ── Insights ──────────────────────────────────────────────────
+function renderInsights() {
+  renderRatingDist();
+  renderMoodDist();
+  renderThemes();
+  renderActionHealth();
+}
+
+function renderRatingDist() {
+  const counts = {1:0,2:0,3:0,4:0,5:0};
+  sessions.forEach(s => { if (s.current_rating) counts[s.current_rating]++; });
+  const max = Math.max(...Object.values(counts), 1);
+  document.getElementById('rating-dist').innerHTML = Object.entries(counts).map(([r,c]) => `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="width:20px;font-size:12px;font-weight:600;color:var(--brand)">${r}</div>
+      <div style="flex:1;height:20px;background:var(--border);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${c/max*100}%;background:var(--brand);border-radius:4px;transition:width .4s"></div>
+      </div>
+      <div style="width:20px;font-size:12px;color:var(--muted)">${c}</div>
+    </div>`).join('');
+}
+
+function renderMoodDist() {
+  const counts = {};
+  sessions.forEach(s => { if (s.mood) counts[s.mood] = (counts[s.mood]||0)+1; });
+  if (!Object.keys(counts).length) {
+    document.getElementById('mood-dist').innerHTML = '<p class="text-muted">No mood data yet.</p>';
+    return;
+  }
+  const moodColors = { 'Very Positive': 'var(--teal)', 'Positive': '#16a34a', 'Neutral': 'var(--amber)', 'Concerned': '#ea580c', 'Disengaged': 'var(--accent)' };
+  document.getElementById('mood-dist').innerHTML = Object.entries(counts).map(([m,c]) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span style="color:${moodColors[m]||'var(--text)'};font-weight:600">${m}</span>
+      <span class="badge" style="background:var(--bg)">${c} member${c>1?'s':''}</span>
+    </div>`).join('');
+}
+
+function renderThemes() {
+  const changes = sessions.map(s => s.one_change).filter(Boolean);
+  if (!changes.length) { document.getElementById('themes-list').innerHTML = '<div class="empty-state"><p>Complete more sessions to see themes.</p></div>'; return; }
+  const keywords = ['process','tool','training','communication','feedback','schedule','workflow','clarity','support','workload'];
+  const found = keywords.map(k => ({
+    k,
+    count: changes.filter(c => c.toLowerCase().includes(k)).length
+  })).filter(x => x.count).sort((a,b)=>b.count-a.count);
+
+  if (!found.length) { document.getElementById('themes-list').innerHTML = '<p class="text-muted">No common themes found yet. Add more sessions.</p>'; return; }
+  document.getElementById('themes-list').innerHTML = found.map(({k,count}) => `
+    <div class="insight-row">
+      <span class="theme-tag">${k}</span>
+      <span style="font-size:13px;color:var(--muted)">${count} member${count>1?'s':''} mentioned</span>
+    </div>`).join('');
+}
+
+function renderActionHealth() {
+  const open = actions.filter(a => a.status === 'Open').length;
+  const inpr = actions.filter(a => a.status === 'In Progress').length;
+  const done = actions.filter(a => a.status === 'Done').length;
+  const total = actions.length || 1;
+  document.getElementById('action-health').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;text-align:center">
+      <div><div style="font-size:28px;font-weight:700;color:var(--accent)">${open}</div><div class="text-muted">Open</div></div>
+      <div><div style="font-size:28px;font-weight:700;color:var(--amber)">${inpr}</div><div class="text-muted">In Progress</div></div>
+      <div><div style="font-size:28px;font-weight:700;color:var(--teal)">${done}</div><div class="text-muted">Done</div></div>
+    </div>
+    <div style="margin-top:1rem;height:10px;border-radius:5px;background:var(--border);overflow:hidden;display:flex">
+      <div style="width:${(done/total*100).toFixed(0)}%;background:var(--teal);transition:width .4s"></div>
+      <div style="width:${(inpr/total*100).toFixed(0)}%;background:var(--amber);transition:width .4s"></div>
+      <div style="width:${(open/total*100).toFixed(0)}%;background:var(--accent);transition:width .4s"></div>
+    </div>
+    <div style="display:flex;gap:1rem;margin-top:.5rem;font-size:11px;color:var(--muted)">
+      <span>🟢 Done ${(done/total*100).toFixed(0)}%</span>
+      <span>🟡 In Progress ${(inpr/total*100).toFixed(0)}%</span>
+      <span>🔴 Open ${(open/total*100).toFixed(0)}%</span>
+    </div>`;
+}
+
+// ── Settings ──────────────────────────────────────────────────
+async function saveSettings() {
+  const url = document.getElementById('s-url').value.trim();
+  if (!url) { toast('Please enter the Apps Script URL'); return; }
+  settings.scriptUrl = url;
+  localStorage.setItem('hitl_settings', JSON.stringify(settings));
+  document.getElementById('config-banner').classList.add('hidden');
+
+  const el = document.getElementById('connection-status');
+  el.textContent = 'Testing connection...';
+  try {
+    const res = await fetch(url + '?action=getAllSessions');
+    const d   = await res.json();
+    if (d.ok !== false) {
+      el.innerHTML = '<span style="color:var(--teal);font-weight:600">✅ Connected! Data will sync to Google Sheets.</span>';
+      await loadRemoteData();
+    } else {
+      el.innerHTML = `<span style="color:var(--accent)">⚠️ Connected but returned error: ${d.error}</span>`;
+    }
+  } catch(e) {
+    el.innerHTML = `<span style="color:var(--accent)">❌ Could not connect. Check the URL and CORS settings.</span>`;
+  }
+}
+
+function saveLeadName() {
+  settings.leadName = document.getElementById('s-lead-name').value.trim();
+  localStorage.setItem('hitl_settings', JSON.stringify(settings));
+  document.getElementById('f-lead').value = settings.leadName;
+  toast('Lead name saved');
+}
+
+function clearSettings() {
+  settings.scriptUrl = '';
+  localStorage.setItem('hitl_settings', JSON.stringify(settings));
+  document.getElementById('s-url').value = '';
+  document.getElementById('connection-status').textContent = '';
+  document.getElementById('config-banner').classList.remove('hidden');
+}
+
+function clearAllData() {
+  if (!confirm('This will delete all locally stored sessions and action items. Are you sure?')) return;
+  localStorage.removeItem('hitl_sessions');
+  localStorage.removeItem('hitl_actions');
+  sessions = []; actions = [];
+  renderDashboard(); renderActions(); renderInsights();
+  toast('Local data cleared');
+}
+
+// ── Remote Sync ───────────────────────────────────────────────
+async function loadRemoteData() {
+  if (!settings.scriptUrl) return;
+  try {
+    const [sr, ar] = await Promise.all([
+      fetch(settings.scriptUrl + '?action=getAllSessions').then(r=>r.json()),
+      fetch(settings.scriptUrl + '?action=getActions').then(r=>r.json())
+    ]);
+    if (sr.ok && sr.sessions?.length) {
+      sessions = sr.sessions;
+      localStorage.setItem('hitl_sessions', JSON.stringify(sessions));
+    }
+    if (ar.ok && ar.actions?.length) {
+      actions = ar.actions;
+      localStorage.setItem('hitl_actions', JSON.stringify(actions));
+    }
+    renderDashboard(); renderActions(); renderInsights();
+  } catch(e) { console.warn('Remote load failed', e); }
+}
+
+async function api(action, payload) {
+  return fetch(settings.scriptUrl, {
+    method: 'POST',
+    body: JSON.stringify({ action, payload }),
+    headers: { 'Content-Type': 'application/json' }
+  }).then(r => r.json());
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function resetForm() {
+  ['f-lead','f-member','f-pos-eff','f-pos-qual','f-pos-leave','f-pos-break',
+   'f-sc-eff','f-sc-qual','f-sc-leave','f-sc-break','f-process','f-ops',
+   'f-team','f-personal-goals','f-personal-support','f-one-change','f-overall']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  if (settings.leadName) document.getElementById('f-lead').value = settings.leadName;
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  selectedMood = ''; selectedRating = 0;
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.star').forEach(s => s.classList.remove('on'));
+  document.getElementById('goals-list').innerHTML = '';
+  document.getElementById('new-action-list').innerHTML = '';
+  goalRows = []; actionRows = [];
+  addGoalRow(); addActionRow();
+  document.getElementById('history-panel').classList.add('hidden');
+  switchTab(0);
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
