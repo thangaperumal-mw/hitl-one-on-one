@@ -276,11 +276,11 @@
     <div class="field">
       <label>Member's Mood / Energy at Start of Meeting</label>
       <div class="mood-row" id="mood-row">
-        <button class="mood-btn" onclick="setMood('Very Positive')">😊 Very Positive</button>
-        <button class="mood-btn" onclick="setMood('Positive')">🙂 Positive</button>
-        <button class="mood-btn" onclick="setMood('Neutral')">😐 Neutral</button>
-        <button class="mood-btn" onclick="setMood('Concerned')">😟 Concerned</button>
-        <button class="mood-btn" onclick="setMood('Disengaged')">😔 Disengaged</button>
+        <button class="mood-btn" data-mood="Very Positive" onclick="setMood('Very Positive')">😊 Very Positive</button>
+        <button class="mood-btn" data-mood="Positive" onclick="setMood('Positive')">🙂 Positive</button>
+        <button class="mood-btn" data-mood="Neutral" onclick="setMood('Neutral')">😐 Neutral</button>
+        <button class="mood-btn" data-mood="Concerned" onclick="setMood('Concerned')">😟 Concerned</button>
+        <button class="mood-btn" data-mood="Disengaged" onclick="setMood('Disengaged')">😔 Disengaged</button>
       </div>
     </div>
     <div class="flex" style="justify-content:flex-end;margin-top:1.25rem">
@@ -571,9 +571,12 @@ function renderDashboard() {
     const initials= m.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
     const openA   = actions.filter(a => a.memberName === m && a.status !== 'Done').length;
     return `
-      <div class="member-card" onclick="openMemberSession('${m}')">
-        <div class="avatar">${initials}</div>
-        <div class="name">${m}</div>
+      <div class="member-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div class="avatar">${initials}</div>
+          <button onclick="deleteSession('${latest.sessionId}')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-weight:600">Delete</button>
+        </div>
+        <div class="name" style="margin-top:8px;cursor:pointer" onclick="openMemberSession('${m}')">${m}</div>
         <div class="meta">${latest.leadName || ''} · ${latest.quarter || ''}</div>
         <div class="rating-bar" style="margin-top:10px">
           <div style="font-size:11px;color:var(--muted);width:40px">Rating</div>
@@ -589,6 +592,15 @@ function renderDashboard() {
 }
 
 function renderMemberCards() { renderDashboard(); }
+
+function deleteSession(sessionId) {
+  if (!confirm('Delete this session? This cannot be undone.')) return;
+  sessions = sessions.filter(s => s.sessionId !== sessionId);
+  localStorage.setItem('hitl_sessions', JSON.stringify(sessions));
+  renderDashboard();
+  renderInsights();
+  toast('Session deleted');
+}
 
 function openMemberSession(name) {
   resetForm();
@@ -631,12 +643,16 @@ function onMemberInput() {
 // ── Mood & Rating ─────────────────────────────────────────────
 function setMood(m) {
   selectedMood = m;
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('on', b.textContent.trim().includes(m.replace('Very ',''))));
+  document.querySelectorAll('.mood-btn').forEach(b => {
+    b.classList.toggle('on', b.getAttribute('data-mood') === m);
+  });
 }
 function setRating(n) {
   selectedRating = n;
   document.getElementById('f-rating').value = n;
-  document.querySelectorAll('.star').forEach((s,i) => s.classList.toggle('on', i < n));
+  document.querySelectorAll('.star').forEach((s, i) => {
+    s.classList.toggle('on', i + 1 === n);
+  });
 }
 
 // ── Goal Rows ─────────────────────────────────────────────────
@@ -805,35 +821,36 @@ function renderActions() {
       </div>
       <span class="owner-tag">${a.owner || 'Lead'}</span>
       <span class="due">${a.dueDate || 'No due date'}</span>
-      <select class="status-sel" onchange="updateActionStatus(${idx}, this.value)">
+      <select class="status-sel" onchange="updateActionStatus('${a.actionId}', this.value)">
         <option ${a.status==='Open'?'selected':''}>Open</option>
         <option ${a.status==='In Progress'?'selected':''}>In Progress</option>
         <option ${a.status==='Done'?'selected':''}>Done</option>
       </select>
+      <button class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px" onclick="deleteAction('${a.actionId}')">Delete</button>
     </div>`).join('');
 }
 
-async function updateActionStatus(idx, status) {
-  const filtStat = document.getElementById('action-filter-status')?.value || '';
-  const filtMem  = document.getElementById('action-filter-member')?.value  || '';
-  let filtered   = actions;
-  if (filtStat) filtered = filtered.filter(a => a.status === filtStat || true);
-  if (filtMem)  filtered = filtered.filter(a => a.memberName === filtMem);
-
-  // Find in full list
-  const a = filtered[idx];
-  if (!a) return;
-  const realIdx = actions.findIndex(x => x.actionId === a.actionId);
+async function updateActionStatus(actionId, status) {
+  const realIdx = actions.findIndex(x => x.actionId === actionId);
   if (realIdx < 0) return;
   actions[realIdx].status = status;
   localStorage.setItem('hitl_actions', JSON.stringify(actions));
-
   if (settings.scriptUrl) {
-    try { await api('updateAction', { actionId: a.actionId, status }); } catch(e) {}
+    try { await api('updateAction', { actionId, status }); } catch(e) {}
   }
   renderActions();
   renderDashboard();
   toast('Action updated');
+}
+
+function deleteAction(actionId) {
+  if (!confirm('Delete this action item? This cannot be undone.')) return;
+  actions = actions.filter(a => a.actionId !== actionId);
+  localStorage.setItem('hitl_actions', JSON.stringify(actions));
+  renderActions();
+  renderDashboard();
+  renderInsights();
+  toast('Action item deleted');
 }
 
 // ── Insights ──────────────────────────────────────────────────
@@ -991,14 +1008,36 @@ async function loadRemoteData() {
 }
 
 async function api(action, payload) {
-  // POSTs to Apps Script must use no-cors to avoid preflight CORS block.
-  // This means the response is opaque (we can't read it), but the write succeeds.
-  // Local storage handles the read side — Sheet is the durable backup.
-  return fetch(settings.scriptUrl, {
-    method: 'POST',
-    mode: 'no-cors',
-    body: JSON.stringify({ action, payload }),
-    headers: { 'Content-Type': 'text/plain' }  // text/plain avoids preflight
+  // Apps Script doesn't support CORS preflight. Hidden form POST is the
+  // only cross-origin method that reliably writes to the sheet without
+  // needing special CORS headers. The form submits in a hidden iframe
+  // so the page doesn't navigate. Response is unreadable (opaque) but
+  // the write always reaches the sheet.
+  return new Promise((resolve) => {
+    const iframe = document.createElement('iframe');
+    iframe.name = 'hidden_post_' + Date.now();
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = settings.scriptUrl;
+    form.target = iframe.name;
+
+    const input = document.createElement('input');
+    input.type  = 'hidden';
+    input.name  = 'payload';
+    input.value = JSON.stringify({ action, payload });
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+
+    setTimeout(() => {
+      document.body.removeChild(form);
+      document.body.removeChild(iframe);
+      resolve({ ok: true });
+    }, 2000);
   });
 }
 
