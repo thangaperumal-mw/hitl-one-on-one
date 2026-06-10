@@ -612,30 +612,45 @@ function openMemberSession(name) {
 // ── Member History ────────────────────────────────────────────
 function onMemberInput() {
   const name = document.getElementById('f-member').value.trim();
-  const past  = sessions.filter(s => s.memberName === name);
+  if (!name) { document.getElementById('history-panel').classList.add('hidden'); return; }
+
+  // Read from local sessions — always available, no async needed
+  const past  = sessions.filter(s => s.memberName && s.memberName.toLowerCase() === name.toLowerCase());
   const panel = document.getElementById('history-panel');
   if (!past.length) { panel.classList.add('hidden'); return; }
 
   panel.classList.remove('hidden');
   document.getElementById('history-member-name').textContent = name;
 
-  const qColors = { 'H1 2026': 'q1', 'Q3 2026': 'q2', 'Q4 2026': 'q3' };
+  const qColors = { 'H1 2026': 'q1', 'Q3 2026': 'q2', 'Q4 2026': 'q3', 'H1 2027': 'q1' };
   document.getElementById('history-entries').innerHTML = past.slice(-3).reverse().map(s => {
-    const qc = qColors[s.quarter] || 'q1';
-    const openA = actions.filter(a => a.memberName === name && a.status !== 'Done' && a.sessionId !== s.sessionId);
+    const qc    = qColors[s.quarter] || 'q1';
+    const openA = actions.filter(a =>
+      a.memberName && a.memberName.toLowerCase() === name.toLowerCase() &&
+      a.status !== 'Done' &&
+      a.sessionId !== s.sessionId
+    );
+    const goals = (() => {
+      try { return JSON.parse(s.goal_comments || '[]'); } catch(e) { return []; }
+    })();
+    const goalSummary = goals.length
+      ? goals.map(g => `<span style="font-size:11px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:1px 6px;margin-right:4px">${g.goal?.slice(0,40) || ''}… <b>${g.status||''}</b></span>`).join('')
+      : '';
     return `
       <div class="history-entry ${qc}">
-        <div class="flex-between" style="margin-bottom:4px">
-          <span class="qbadge">${s.quarter}</span>
-          <span class="text-muted">${s.meetingDate} · Lead: ${s.leadName}</span>
+        <div class="flex-between" style="margin-bottom:6px">
+          <span class="qbadge" style="font-weight:700;color:var(--brand)">${s.quarter}</span>
+          <span class="text-muted">${s.meetingDate || '—'} · Lead: ${s.leadName || '—'}</span>
         </div>
-        <div style="font-size:13px;margin-bottom:4px">
-          <strong>Rating:</strong> ${s.current_rating || '—'}/5 &nbsp;·&nbsp;
-          <strong>Mood:</strong> ${s.mood || '—'} &nbsp;·&nbsp;
-          <strong>Goal Status:</strong> ${s.goal_status || '—'}
+        <div style="font-size:13px;margin-bottom:6px;display:flex;gap:16px;flex-wrap:wrap">
+          <span><b>Rating:</b> ${s.current_rating || '—'}/5</span>
+          <span><b>Mood:</b> ${s.mood || '—'}</span>
+          <span><b>Goal Status:</b> ${s.goal_status || '—'}</span>
         </div>
-        ${s.one_change ? `<div style="font-size:12px;color:var(--muted)">💡 Requested change: ${s.one_change.slice(0,120)}${s.one_change.length>120?'…':''}</div>` : ''}
-        ${openA.length ? `<div style="margin-top:4px"><span class="badge badge-pending">${openA.length} open actions from this period</span></div>` : ''}
+        ${goalSummary ? `<div style="margin-bottom:6px">${goalSummary}</div>` : ''}
+        ${s.one_change ? `<div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 <b>One change requested:</b> ${s.one_change.slice(0,160)}${s.one_change.length>160?'…':''}</div>` : ''}
+        ${s.overall_feedback ? `<div style="font-size:12px;color:var(--muted)">📝 <b>Overall feedback:</b> ${s.overall_feedback.slice(0,160)}${s.overall_feedback.length>160?'…':''}</div>` : ''}
+        ${openA.length ? `<div style="margin-top:6px"><span class="badge badge-pending">${openA.length} open action${openA.length>1?'s':''} from this period</span></div>` : ''}
       </div>`;
   }).join('');
 }
@@ -780,13 +795,22 @@ async function submitSession() {
 
   // Push to Google Sheets if connected
   if (settings.scriptUrl) {
+    toast('Saving to Google Sheets… ⏳');
     try {
-      await api('saveSession', payload);
-      for (const a of newActs) await api('saveAction', a);
-    } catch(e) { console.warn('Sheet sync failed', e); }
+      const r1 = await api('saveSession', payload);
+      if (!r1.ok) throw new Error(r1.error);
+      for (const a of newActs) {
+        const r2 = await api('saveAction', a);
+        if (!r2.ok) console.warn('Action save failed', r2.error);
+      }
+      toast('Session saved & synced to Sheet ✅');
+    } catch(e) {
+      console.warn('Sheet sync failed:', e);
+      toast('Saved locally. Sheet sync failed — check your URL in Settings.');
+    }
+  } else {
+    toast('Session saved locally ✅');
   }
-
-  toast('Session saved! ✅');
   resetForm();
   showPage('dashboard');
 }
@@ -1008,37 +1032,12 @@ async function loadRemoteData() {
 }
 
 async function api(action, payload) {
-  // Apps Script doesn't support CORS preflight. Hidden form POST is the
-  // only cross-origin method that reliably writes to the sheet without
-  // needing special CORS headers. The form submits in a hidden iframe
-  // so the page doesn't navigate. Response is unreadable (opaque) but
-  // the write always reaches the sheet.
-  return new Promise((resolve) => {
-    const iframe = document.createElement('iframe');
-    iframe.name = 'hidden_post_' + Date.now();
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = settings.scriptUrl;
-    form.target = iframe.name;
-
-    const input = document.createElement('input');
-    input.type  = 'hidden';
-    input.name  = 'payload';
-    input.value = JSON.stringify({ action, payload });
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-    form.submit();
-
-    setTimeout(() => {
-      document.body.removeChild(form);
-      document.body.removeChild(iframe);
-      resolve({ ok: true });
-    }, 2000);
-  });
+  // All writes go via GET params — Apps Script GET requests are never
+  // preflighted by the browser so there are zero CORS issues.
+  const encoded = encodeURIComponent(JSON.stringify(payload));
+  const url     = `${settings.scriptUrl}?action=${action}&data=${encoded}&_=${Date.now()}`;
+  const res     = await fetch(url);
+  return res.json();
 }
 
 // ── Helpers ───────────────────────────────────────────────────
