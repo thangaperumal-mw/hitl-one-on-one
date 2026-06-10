@@ -453,33 +453,28 @@
 <div id="page-settings" class="page">
   <h1 style="font-size:20px;font-weight:700;color:var(--brand);margin-bottom:1.5rem">Settings</h1>
 
-  <div class="card">
-    <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Google Sheets Connection</h2>
+  <div class="card" style="border-color:var(--teal);border-width:2px">
+    <h2 style="font-size:14px;font-weight:700;margin-bottom:.25rem;color:var(--teal)">Google Sheets URL — Shared Configuration</h2>
+    <p class="text-muted" style="margin-bottom:1rem;font-size:12px">This URL is stored in <strong>your browser only</strong>. Every lead must paste it once in their own browser. After that, all data is read from and written to the same Sheet automatically — no one else needs to configure anything again.</p>
     <div class="field">
       <label>Apps Script Web App URL</label>
       <input type="url" id="s-url" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;" />
     </div>
-    <p class="text-muted mt-1">Paste the URL from your deployed Google Apps Script. See <strong>Code.gs</strong> for setup instructions.</p>
     <div class="flex gap-8 mt-2">
-      <button class="btn btn-primary" onclick="saveSettings()">Save & Test Connection</button>
-      <button class="btn btn-ghost" onclick="clearSettings()">Clear</button>
+      <button class="btn btn-primary" onclick="saveScriptUrl()">Save & Connect</button>
+      <button class="btn btn-teal" onclick="loadRemoteData();toast('Refreshing data from Sheet…')">🔄 Sync Now</button>
+      <button class="btn btn-ghost" onclick="clearScriptUrl()">Clear</button>
     </div>
     <div id="connection-status" style="margin-top:.75rem;font-size:13px;"></div>
   </div>
 
   <div class="card" style="margin-top:1rem">
-    <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Default Lead Name</h2>
+    <h2 style="font-size:14px;font-weight:700;margin-bottom:.25rem;color:var(--brand)">Your Lead Name</h2>
+    <p class="text-muted" style="margin-bottom:1rem;font-size:12px">Stored only in your browser. Pre-fills the Lead Name field when you start a new session.</p>
     <div class="field">
-      <label>Your Name (pre-filled in new sessions)</label>
       <input type="text" id="s-lead-name" placeholder="e.g. TP" />
     </div>
-    <button class="btn btn-primary mt-2" onclick="saveLeadName()">Save</button>
-  </div>
-
-  <div class="card" style="margin-top:1rem;border-color:#fecaca;">
-    <h2 style="font-size:14px;font-weight:700;margin-bottom:.5rem;color:#dc2626;">Danger Zone</h2>
-    <p class="text-muted">Clear all locally stored data. This cannot be undone.</p>
-    <button class="btn btn-sm mt-1" style="background:#dc2626;color:#fff" onclick="clearAllData()">Clear All Local Data</button>
+    <button class="btn btn-primary mt-2" onclick="saveLeadName()">Save Name</button>
   </div>
 </div>
 
@@ -488,36 +483,41 @@
 <div id="toast"></div>
 
 <script>
-// ── State ────────────────────────────────────────────────────
-let sessions   = JSON.parse(localStorage.getItem('hitl_sessions')   || '[]');
-let actions    = JSON.parse(localStorage.getItem('hitl_actions')    || '[]');
-let settings   = JSON.parse(localStorage.getItem('hitl_settings')   || '{}');
-let goalRows   = [];
-let actionRows = [];
+// ── Config ────────────────────────────────────────────────────
+// ⚠️  PASTE YOUR APPS SCRIPT URL HERE ONCE — all leads share this automatically
+const SCRIPT_URL = localStorage.getItem('hitl_script_url') || '';
+
+// ── State ─────────────────────────────────────────────────────
+let sessions     = [];   // always loaded from Sheet on boot
+let actions      = [];   // always loaded from Sheet on boot
+let leadName     = localStorage.getItem('hitl_lead_name') || '';
+let goalRows     = [];
+let actionRows   = [];
 let selectedMood   = '';
 let selectedRating = 0;
 let currentTab     = 0;
+let scriptUrl      = SCRIPT_URL;
 
 // ── Boot ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  if (settings.leadName) document.getElementById('f-lead').value = settings.leadName;
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('f-date').value = today;
-
-  if (!settings.scriptUrl) {
-    document.getElementById('config-banner').classList.remove('hidden');
-  } else {
-    document.getElementById('config-banner').classList.add('hidden');
-    document.getElementById('s-url').value = settings.scriptUrl;
-    loadRemoteData();
+  // Pre-fill lead name from local pref only (personal, not shared)
+  if (leadName) {
+    document.getElementById('f-lead').value = leadName;
+    document.getElementById('s-lead-name').value = leadName;
   }
-  if (settings.leadName) document.getElementById('s-lead-name').value = settings.leadName;
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+
+  // Populate settings fields
+  if (scriptUrl) {
+    document.getElementById('s-url').value = scriptUrl;
+    document.getElementById('config-banner').classList.add('hidden');
+  }
 
   addGoalRow();
   addActionRow();
-  renderDashboard();
-  renderActions();
-  renderInsights();
+
+  // Always load from Sheet — this is the single source of truth
+  loadRemoteData();
 });
 
 // ── Navigation ───────────────────────────────────────────────
@@ -597,13 +597,13 @@ function renderDashboard() {
 
 function renderMemberCards() { renderDashboard(); }
 
-function deleteSession(sessionId) {
-  if (!confirm('Delete this session? This cannot be undone.')) return;
+async function deleteSession(sessionId) {
+  if (!confirm('Delete this session from the view? Note: the record remains in Google Sheets for audit purposes.')) return;
+  // Remove from local view only — Sheet retains the record
   sessions = sessions.filter(s => s.sessionId !== sessionId);
-  localStorage.setItem('hitl_sessions', JSON.stringify(sessions));
   renderDashboard();
   renderInsights();
-  toast('Session deleted');
+  toast('Session removed from view. Sheet record retained.');
 }
 
 function openMemberSession(name) {
@@ -788,35 +788,27 @@ async function submitSession() {
     timestamp:               new Date().toISOString()
   };
 
-  // Save locally
-  sessions.push(payload);
-  localStorage.setItem('hitl_sessions', JSON.stringify(sessions));
-
-  // Save action items locally
   const newActs = collectNewActions(sid, member, lead, quarter, date);
-  actions.push(...newActs);
-  localStorage.setItem('hitl_actions', JSON.stringify(actions));
 
-  // Push to Google Sheets if connected
-  if (settings.scriptUrl) {
-    toast('Saving to Google Sheets… ⏳');
-    try {
-      const r1 = await api('saveSession', payload);
-      if (!r1.ok) throw new Error(r1.error);
-      for (const a of newActs) {
-        const r2 = await api('saveAction', a);
-        if (!r2.ok) console.warn('Action save failed', r2.error);
-      }
-      toast('Session saved & synced to Sheet ✅');
-    } catch(e) {
-      console.warn('Sheet sync failed:', e);
-      toast('Saved locally. Sheet sync failed — check your URL in Settings.');
-    }
-  } else {
-    toast('Session saved locally ✅');
+  // Sheet is the single source of truth — no localStorage writes
+  if (!scriptUrl) {
+    toast('⚠️ No Sheet URL configured. Go to Settings first.');
+    return;
   }
-  resetForm();
-  showPage('dashboard');
+
+  toast('Saving to Google Sheets… ⏳');
+  try {
+    const r1 = await api('saveSession', payload);
+    if (!r1.ok) throw new Error(r1.error || 'Save failed');
+    for (const a of newActs) await api('saveAction', a);
+    toast('Saved & synced ✅ — all leads can see this now');
+    resetForm();
+    showPage('dashboard');
+    await loadRemoteData(); // refresh everyone's view from Sheet
+  } catch(e) {
+    console.error('Sheet sync failed:', e);
+    toast('❌ Sync failed: ' + e.message + ' — check Settings');
+  }
 }
 
 // ── Actions Page ──────────────────────────────────────────────
@@ -832,7 +824,7 @@ function renderActions() {
     sel.innerHTML = '<option value="">All Members</option>' + members.map(m => `<option ${m===cur?'selected':''}>${m}</option>`).join('');
   }
 
-  let filtered = actions;
+  let filtered = actions.filter(a => a.status !== 'Deleted');
   if (statusF) filtered = filtered.filter(a => a.status === statusF);
   if (memberF) filtered = filtered.filter(a => a.memberName === memberF);
 
@@ -859,26 +851,26 @@ function renderActions() {
 }
 
 async function updateActionStatus(actionId, status) {
-  const realIdx = actions.findIndex(x => x.actionId === actionId);
-  if (realIdx < 0) return;
-  actions[realIdx].status = status;
-  localStorage.setItem('hitl_actions', JSON.stringify(actions));
-  if (settings.scriptUrl) {
-    try { await api('updateAction', { actionId, status }); } catch(e) {}
+  if (!scriptUrl) { toast('⚠️ No Sheet URL configured.'); return; }
+  try {
+    await api('updateAction', { actionId, status });
+    toast('Action updated ✅');
+    await loadRemoteData();
+  } catch(e) {
+    toast('❌ Update failed — check Settings');
   }
-  renderActions();
-  renderDashboard();
-  toast('Action updated');
 }
 
-function deleteAction(actionId) {
+async function deleteAction(actionId) {
   if (!confirm('Delete this action item? This cannot be undone.')) return;
-  actions = actions.filter(a => a.actionId !== actionId);
-  localStorage.setItem('hitl_actions', JSON.stringify(actions));
-  renderActions();
-  renderDashboard();
-  renderInsights();
-  toast('Action item deleted');
+  // Mark as Deleted in Sheet (Apps Script GET can't physically delete rows safely)
+  try {
+    await api('updateAction', { actionId, status: 'Deleted' });
+    toast('Action deleted ✅');
+    await loadRemoteData();
+  } catch(e) {
+    toast('❌ Delete failed');
+  }
 }
 
 // ── Insights ──────────────────────────────────────────────────
@@ -959,87 +951,82 @@ function renderActionHealth() {
 }
 
 // ── Settings ──────────────────────────────────────────────────
-async function saveSettings() {
+async function saveScriptUrl() {
   const url = document.getElementById('s-url').value.trim();
   if (!url) { toast('Please enter the Apps Script URL'); return; }
-  settings.scriptUrl = url;
-  localStorage.setItem('hitl_settings', JSON.stringify(settings));
+  scriptUrl = url;
+  localStorage.setItem('hitl_script_url', url);
   document.getElementById('config-banner').classList.add('hidden');
 
   const el = document.getElementById('connection-status');
-  el.innerHTML = '<span style="color:var(--amber)">⏳ Testing connection...</span>';
-
-  // Apps Script requires no-cors for cross-origin requests.
-  // We use a <script> tag trick (JSONP-style via iframe) for the ping,
-  // but the simplest reliable test is just a plain GET via a new tab.
-  // For in-page testing, we use an image/script tag approach:
+  el.innerHTML = '<span style="color:var(--amber)">⏳ Connecting…</span>';
   try {
-    const pingUrl = url + '?action=ping&_=' + Date.now();
-    const res = await fetch(pingUrl, { mode: 'no-cors' });
-    // no-cors always returns opaque response (status 0) — if it doesn't throw, the URL is reachable
-    el.innerHTML = '<span style="color:var(--teal);font-weight:600">✅ URL accepted! Apps Script is reachable. Data will sync to Google Sheets.</span>';
-    settings.scriptUrl = url;
-    localStorage.setItem('hitl_settings', JSON.stringify(settings));
-    await loadRemoteData();
+    const res = await fetch(url + '?action=ping&_=' + Date.now());
+    const d   = await res.json();
+    if (d.ok) {
+      el.innerHTML = '<span style="color:var(--teal);font-weight:600">✅ Connected! Loading shared data…</span>';
+      await loadRemoteData();
+      el.innerHTML = '<span style="color:var(--teal);font-weight:600">✅ Connected & synced. All leads share this data automatically.</span>';
+    } else {
+      el.innerHTML = `<span style="color:var(--accent)">⚠️ Reached but got error: ${d.error}</span>`;
+    }
   } catch(e) {
-    el.innerHTML = `<span style="color:var(--accent)">❌ Could not reach the URL. Double-check it is the /exec URL from Apps Script deployment, not the editor URL.</span>`;
+    el.innerHTML = `<span style="color:var(--accent)">❌ Could not reach URL. Make sure it ends in /exec and "Anyone" has access.</span>`;
   }
 }
 
-function saveLeadName() {
-  settings.leadName = document.getElementById('s-lead-name').value.trim();
-  localStorage.setItem('hitl_settings', JSON.stringify(settings));
-  document.getElementById('f-lead').value = settings.leadName;
-  toast('Lead name saved');
-}
-
-function clearSettings() {
-  settings.scriptUrl = '';
-  localStorage.setItem('hitl_settings', JSON.stringify(settings));
+function clearScriptUrl() {
+  scriptUrl = '';
+  localStorage.removeItem('hitl_script_url');
   document.getElementById('s-url').value = '';
   document.getElementById('connection-status').textContent = '';
   document.getElementById('config-banner').classList.remove('hidden');
-}
-
-function clearAllData() {
-  if (!confirm('This will delete all locally stored sessions and action items. Are you sure?')) return;
-  localStorage.removeItem('hitl_sessions');
-  localStorage.removeItem('hitl_actions');
   sessions = []; actions = [];
   renderDashboard(); renderActions(); renderInsights();
-  toast('Local data cleared');
+  toast('Sheet URL cleared');
 }
 
-// ── Remote Sync ───────────────────────────────────────────────
-// Apps Script does not support CORS preflight (OPTIONS).
-// Pattern: GETs work normally (no preflight). POSTs use no-cors (opaque, fire-and-forget).
-// Local storage is always the source of truth for reads; Sheet is the durable backup.
+function saveLeadName() {
+  leadName = document.getElementById('s-lead-name').value.trim();
+  localStorage.setItem('hitl_lead_name', leadName);
+  document.getElementById('f-lead').value = leadName;
+  toast('Lead name saved');
+}
 
+// ── Remote Sync — Sheet is the ONLY source of truth ──────────
 async function loadRemoteData() {
-  if (!settings.scriptUrl) return;
-  try {
-    // GET requests work fine cross-origin with Apps Script (no preflight triggered)
-    const [sr, ar] = await Promise.all([
-      fetch(settings.scriptUrl + '?action=getAllSessions&_=' + Date.now()).then(r=>r.json()),
-      fetch(settings.scriptUrl + '?action=getActions&_=' + Date.now()).then(r=>r.json())
-    ]);
-    if (sr.ok && sr.sessions?.length) {
-      sessions = sr.sessions;
-      localStorage.setItem('hitl_sessions', JSON.stringify(sessions));
-    }
-    if (ar.ok && ar.actions?.length) {
-      actions = ar.actions;
-      localStorage.setItem('hitl_actions', JSON.stringify(actions));
-    }
+  if (!scriptUrl) {
+    // No URL configured — show banner, render empty state
+    document.getElementById('config-banner').classList.remove('hidden');
     renderDashboard(); renderActions(); renderInsights();
-  } catch(e) { console.warn('Remote load failed', e); }
+    return;
+  }
+
+  // Show loading indicator in dashboard
+  const grid = document.getElementById('members-grid');
+  if (grid) grid.innerHTML = `<div class="empty-state"><p>⏳ Loading data from Google Sheets…</p></div>`;
+
+  try {
+    const [sr, ar] = await Promise.all([
+      fetch(scriptUrl + '?action=getAllSessions&_=' + Date.now()).then(r => r.json()),
+      fetch(scriptUrl + '?action=getActions&_='     + Date.now()).then(r => r.json())
+    ]);
+
+    sessions = (sr.ok && Array.isArray(sr.sessions)) ? sr.sessions : [];
+    actions  = (ar.ok && Array.isArray(ar.actions))  ? ar.actions  : [];
+
+    renderDashboard();
+    renderActions();
+    renderInsights();
+  } catch(e) {
+    console.error('Remote load failed:', e);
+    if (grid) grid.innerHTML = `<div class="empty-state"><p>❌ Could not load data. Check your Apps Script URL in Settings.</p></div>`;
+  }
 }
 
 async function api(action, payload) {
-  // All writes go via GET params — Apps Script GET requests are never
-  // preflighted by the browser so there are zero CORS issues.
   const encoded = encodeURIComponent(JSON.stringify(payload));
-  const url     = `${settings.scriptUrl}?action=${action}&data=${encoded}&_=${Date.now()}`;
+  const url     = `${scriptUrl}?action=${action}&data=${encoded}&_=${Date.now()}`;
   const res     = await fetch(url);
   return res.json();
 }
@@ -1050,7 +1037,7 @@ function resetForm() {
    'f-sc-eff','f-sc-qual','f-sc-leave','f-sc-break','f-process','f-ops',
    'f-team','f-personal-goals','f-personal-support','f-one-change','f-overall']
     .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  if (settings.leadName) document.getElementById('f-lead').value = settings.leadName;
+  if (leadName) document.getElementById('f-lead').value = leadName;
   document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
   selectedMood = ''; selectedRating = 0;
   document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('on'));
