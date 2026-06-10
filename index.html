@@ -81,10 +81,14 @@
   .field textarea { resize: vertical; min-height: 70px; }
   .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 
-  /* Rating stars */
-  .star-row { display: flex; gap: 6px; margin-top: 4px; }
-  .star { width: 32px; height: 32px; border: 1.5px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: all .15s; color: var(--muted); }
-  .star.on { border-color: var(--amber); background: var(--amber-soft); color: var(--amber); }
+  /* Rating label buttons */
+  .rating-label-row { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .rating-label-btn { display: flex; align-items: center; gap: 12px; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 16px; cursor: pointer; background: var(--bg); text-align: left; transition: all .15s; width: 100%; }
+  .rating-label-btn:hover { border-color: var(--brand); background: #f0f4ff; }
+  .rating-label-btn.on { border-color: var(--brand); background: var(--brand); color: #fff; }
+  .rating-label-btn .rl-num { width: 24px; height: 24px; border-radius: 50%; background: var(--border); color: var(--text); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; transition: all .15s; }
+  .rating-label-btn.on .rl-num { background: rgba(255,255,255,.25); color: #fff; }
+  .rating-label-btn .rl-text { font-size: 13px; font-weight: 600; }
 
   /* Mood selector */
   .mood-row { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
@@ -334,15 +338,15 @@
 
   <!-- Tab 3: Rating & Plans -->
   <div class="card tab-panel hidden" data-tab="3">
-    <h3 class="agenda-title"><span class="step">6</span> Current Rating (Jan–May Performance)</h3>
+    <h3 class="agenda-title"><span class="step">6</span> Current Rating</h3>
     <div class="field">
-      <label>Rating (1 = Needs Improvement · 5 = Exceptional)</label>
-      <div class="star-row" id="star-row">
-        <div class="star" onclick="setRating(1)">1</div>
-        <div class="star" onclick="setRating(2)">2</div>
-        <div class="star" onclick="setRating(3)">3</div>
-        <div class="star" onclick="setRating(4)">4</div>
-        <div class="star" onclick="setRating(5)">5</div>
+      <label>Select performance level</label>
+      <div class="rating-label-row" id="rating-label-row">
+        <button class="rating-label-btn" data-value="1" onclick="setRating(1)"><span class="rl-num">1</span><span class="rl-text">Below Expectations</span></button>
+        <button class="rating-label-btn" data-value="2" onclick="setRating(2)"><span class="rl-num">2</span><span class="rl-text">Needs Development</span></button>
+        <button class="rating-label-btn" data-value="3" onclick="setRating(3)"><span class="rl-num">3</span><span class="rl-text">Consistently Meets Expectations</span></button>
+        <button class="rating-label-btn" data-value="4" onclick="setRating(4)"><span class="rl-num">4</span><span class="rl-text">Exceeds Expectations</span></button>
+        <button class="rating-label-btn" data-value="5" onclick="setRating(5)"><span class="rl-num">5</span><span class="rl-text">Sets New Standard</span></button>
       </div>
       <input type="hidden" id="f-rating" value="" />
     </div>
@@ -665,8 +669,8 @@ function setMood(m) {
 function setRating(n) {
   selectedRating = n;
   document.getElementById('f-rating').value = n;
-  document.querySelectorAll('.star').forEach((s, i) => {
-    s.classList.toggle('on', i + 1 === n);
+  document.querySelectorAll('.rating-label-btn').forEach(b => {
+    b.classList.toggle('on', parseInt(b.getAttribute('data-value')) === n);
   });
 }
 
@@ -1050,7 +1054,7 @@ function resetForm() {
   document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
   selectedMood = ''; selectedRating = 0;
   document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('on'));
-  document.querySelectorAll('.star').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.rating-label-btn').forEach(b => b.classList.remove('on'));
   document.getElementById('goals-list').innerHTML = '';
   document.getElementById('new-action-list').innerHTML = '';
   goalRows = []; actionRows = [];
