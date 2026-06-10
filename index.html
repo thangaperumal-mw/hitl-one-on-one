@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HITL 1-on-1 Tool — Content</title>
+<title>HITL 1-on-1 Tool — Meltwater</title>
 <style>
   :root {
     --brand:       #0f3460;
@@ -151,7 +151,22 @@
   .form-tab { border: 1px solid var(--border); border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 600; cursor: pointer; background: var(--bg); transition: all .15s; }
   .form-tab.active { background: var(--brand); color: #fff; border-color: var(--brand); }
 
-  /* Utility */
+  /* Read-only view fields */
+  .view-field { margin-bottom: 1rem; }
+  .view-field .vf-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+  .view-field .vf-value { font-size: 13px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; min-height: 36px; white-space: pre-wrap; line-height: 1.6; }
+  .view-field .vf-value.empty { color: var(--muted); font-style: italic; }
+  .view-summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center; }
+  .view-summary-card .vs-val { font-size: 22px; font-weight: 700; color: var(--brand); }
+  .view-summary-card .vs-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .goal-view-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); margin-bottom: 8px; font-size: 13px; }
+  .goal-status-pill { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 12px; white-space: nowrap; }
+  .pill-on-track  { background: var(--teal-soft);  color: var(--teal); }
+  .pill-at-risk   { background: var(--amber-soft); color: var(--amber); }
+  .pill-delayed   { background: #fee2e2; color: #dc2626; }
+  .pill-completed { background: #eff6ff; color: #2563eb; }
+  .rating-view-pill { display: inline-flex; align-items: center; gap: 10px; border: 2px solid var(--brand); border-radius: var(--radius); padding: 10px 20px; font-weight: 700; color: var(--brand); font-size: 14px; background: #f0f4ff; }
+  .rating-view-pill .rv-num { width: 28px; height: 28px; border-radius: 50%; background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
   .flex { display: flex; }
   .flex-between { display: flex; align-items: center; justify-content: space-between; }
   .gap-8 { gap: 8px; }
@@ -174,7 +189,7 @@
 <nav>
   <div class="logo">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="white" stroke-width="1.5"/><path d="M6 10h8M10 6v8" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-    HITL 1-on-1 Tool <span>/ Content</span>
+    HITL 1-on-1 Tool <span>/ Meltwater</span>
   </div>
   <div class="nav-links">
     <button class="active" onclick="showPage('dashboard')">Dashboard</button>
@@ -199,7 +214,7 @@
       <h1 style="font-size:20px;font-weight:700;color:var(--brand)">H1 2026 — 1-on-1 Sessions</h1>
       <p class="text-muted mt-1">All leads · All members</p>
     </div>
-    <button class="btn btn-accent" onclick="showPage('form')">+ New Session</button>
+    <button class="btn btn-accent" onclick="currentViewSessionId=null;showPage('form')">+ New Session</button>
   </div>
 
   <div class="stats-grid" id="stats-grid">
@@ -393,7 +408,64 @@
   </div>
 </div>
 
-<!-- ══════════════════════ ACTION ITEMS ══════════════════════ -->
+<!-- ══════════════════════ VIEW SESSION ══════════════════════ -->
+<div id="page-view" class="page">
+  <div class="flex-between" style="margin-bottom:1.5rem">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:var(--brand)" id="view-title">Session Details</h1>
+      <p class="text-muted mt-1" id="view-meta"></p>
+    </div>
+    <div class="flex gap-8">
+      <button class="btn btn-ghost" onclick="showPage('dashboard')">← Back</button>
+      <button class="btn btn-primary" id="btn-edit-session" onclick="editCurrentSession()">✏️ Edit Session</button>
+    </div>
+  </div>
+
+  <!-- Summary cards row -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem" id="view-summary-row"></div>
+
+  <!-- Section: Positives -->
+  <div class="card">
+    <h3 class="agenda-title"><span class="step">2</span> Things Worked Out Well — Positives</h3>
+    <div class="sub-grid" id="view-positives"></div>
+  </div>
+
+  <!-- Section: Shortcomings -->
+  <div class="card">
+    <h3 class="agenda-title"><span class="step">3</span> Things Need to Improve — Shortcomings</h3>
+    <div class="sub-grid" id="view-shortcomings"></div>
+  </div>
+
+  <!-- Section: Team & Process -->
+  <div class="card">
+    <h3 class="agenda-title"><span class="step">4</span> Process, Operations & Team Views</h3>
+    <div id="view-team"></div>
+  </div>
+
+  <!-- Section: Goals -->
+  <div class="card">
+    <h3 class="agenda-title"><span class="step">5</span> Goal Tracking</h3>
+    <div id="view-goals"></div>
+  </div>
+
+  <!-- Section: Rating & Plans -->
+  <div class="card">
+    <h3 class="agenda-title"><span class="step">6–8</span> Rating, Personal Goals & One Change</h3>
+    <div id="view-rating-plans"></div>
+  </div>
+
+  <!-- Section: Overall Feedback -->
+  <div class="card">
+    <h3 class="agenda-title"><span class="step">✓</span> Overall Feedback</h3>
+    <div id="view-overall"></div>
+  </div>
+
+  <!-- Section: Action Items -->
+  <div class="card">
+    <h3 class="agenda-title"><span class="step">✓</span> Action Items</h3>
+    <div id="view-actions-list"></div>
+  </div>
+</div>
 <div id="page-actions" class="page">
   <div class="flex-between" style="margin-bottom:1.5rem">
     <div>
@@ -526,7 +598,7 @@ function showPage(name) {
   document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   const btns = document.querySelectorAll('.nav-links button');
-  const map  = ['dashboard','form','actions','insights','settings'];
+  const map  = ['dashboard','form','actions','insights','settings','view'];
   btns[map.indexOf(name)]?.classList.add('active');
   if (name === 'dashboard') renderDashboard();
   if (name === 'actions')   renderActions();
@@ -580,7 +652,7 @@ function renderDashboard() {
           <div class="avatar">${initials}</div>
           <button onclick="deleteSession('${latest.sessionId}')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-weight:600">Delete</button>
         </div>
-        <div class="name" style="margin-top:8px;cursor:pointer" onclick="openMemberSession('${m}')">${m}</div>
+        <div class="name" style="margin-top:8px;cursor:pointer" onclick="openMemberView('${latest.sessionId}')">${m}</div>
         <div class="meta">${latest.leadName || ''} · ${latest.quarter || ''}</div>
         <div class="rating-bar" style="margin-top:10px">
           <div style="font-size:11px;color:var(--muted);width:40px">Rating</div>
@@ -611,6 +683,193 @@ function openMemberSession(name) {
   document.getElementById('f-member').value = name;
   onMemberInput();
   showPage('form');
+}
+
+// ── View Session (read-only) ──────────────────────────────────
+let currentViewSessionId = null;
+
+function openMemberView(sessionId) {
+  const s = sessions.find(x => x.sessionId === sessionId);
+  if (!s) { toast('Session data not found'); return; }
+  currentViewSessionId = sessionId;
+  renderViewPage(s);
+  showPage('view');
+}
+
+const RATING_LABELS = {
+  1: 'Below Expectations',
+  2: 'Needs Development',
+  3: 'Consistently Meets Expectations',
+  4: 'Exceeds Expectations',
+  5: 'Sets New Standard'
+};
+
+function vField(label, value) {
+  const isEmpty = !value || value.trim() === '';
+  return `<div class="view-field">
+    <div class="vf-label">${label}</div>
+    <div class="vf-value ${isEmpty ? 'empty' : ''}">${isEmpty ? 'Not filled' : value}</div>
+  </div>`;
+}
+
+function renderViewPage(s) {
+  document.getElementById('view-title').textContent = `${s.memberName} — 1-on-1 Session`;
+  document.getElementById('view-meta').textContent  = `${s.quarter} · ${s.meetingDate} · Lead: ${s.leadName}`;
+
+  // Summary row
+  const ratingLabel = RATING_LABELS[s.current_rating] || '—';
+  document.getElementById('view-summary-row').innerHTML = `
+    <div class="view-summary-card">
+      <div class="vs-val">${s.current_rating || '—'}/5</div>
+      <div class="vs-lbl">Rating</div>
+      <div style="font-size:11px;color:var(--brand);font-weight:600;margin-top:4px">${ratingLabel}</div>
+    </div>
+    <div class="view-summary-card">
+      <div class="vs-val" style="font-size:16px">${s.mood || '—'}</div>
+      <div class="vs-lbl">Mood</div>
+    </div>
+    <div class="view-summary-card">
+      <div class="vs-val" style="font-size:15px">${s.goal_status || '—'}</div>
+      <div class="vs-lbl">Goal Status</div>
+    </div>
+    <div class="view-summary-card">
+      <div class="vs-val">${actions.filter(a => a.memberName === s.memberName && a.status !== 'Done' && a.status !== 'Deleted').length}</div>
+      <div class="vs-lbl">Open Actions</div>
+    </div>`;
+
+  // Positives
+  document.getElementById('view-positives').innerHTML =
+    vField('Efficiency',         s.positives_efficiency) +
+    vField('Quality',            s.positives_quality) +
+    vField('Leaves & Attendance',s.positives_leaves) +
+    vField('Breaks & Habits',    s.positives_breaks);
+
+  // Shortcomings
+  document.getElementById('view-shortcomings').innerHTML =
+    vField('Efficiency',         s.shortcomings_efficiency) +
+    vField('Quality',            s.shortcomings_quality) +
+    vField('Leaves & Attendance',s.shortcomings_leaves) +
+    vField('Breaks & Habits',    s.shortcomings_breaks);
+
+  // Team & Process
+  document.getElementById('view-team').innerHTML =
+    vField('Process Views',    s.process_views) +
+    vField('Operations Views', s.operations_views) +
+    vField('Team Dynamics',    s.team_views);
+
+  // Goals
+  const goals = (() => { try { return JSON.parse(s.goal_comments || '[]'); } catch(e) { return []; } })();
+  const pillClass = { 'On Track': 'pill-on-track', 'At Risk': 'pill-at-risk', 'Delayed': 'pill-delayed', 'Completed': 'pill-completed' };
+  document.getElementById('view-goals').innerHTML = goals.length
+    ? goals.map(g => `
+        <div class="goal-view-row">
+          <span>${g.goal || '—'}</span>
+          <span class="goal-status-pill ${pillClass[g.status] || ''}">${g.status || '—'}</span>
+        </div>`).join('')
+    : '<p class="text-muted">No goals recorded.</p>';
+
+  // Rating & Plans
+  document.getElementById('view-rating-plans').innerHTML = `
+    <div style="margin-bottom:1rem">
+      <div class="vf-label" style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Current Rating</div>
+      ${s.current_rating
+        ? `<div class="rating-view-pill"><span class="rv-num">${s.current_rating}</span>${ratingLabel}</div>`
+        : '<p class="text-muted" style="font-size:13px">Not rated</p>'}
+    </div>
+    ${vField('Personal Goals', s.personal_goals)}
+    ${vField('Support Needed', s.personal_support)}
+    ${vField('One Change to Improve More', s.one_change)}`;
+
+  // Overall Feedback
+  document.getElementById('view-overall').innerHTML = vField('Overall Feedback', s.overall_feedback);
+
+  // Action Items for this member
+  const memberActions = actions.filter(a =>
+    a.memberName === s.memberName && a.status !== 'Deleted'
+  );
+  document.getElementById('view-actions-list').innerHTML = memberActions.length
+    ? memberActions.map(a => `
+        <div class="action-item ${a.status === 'Done' ? 'done' : ''}" style="margin-bottom:8px">
+          <div class="desc">
+            <div style="font-weight:600;margin-bottom:2px">${a.description}</div>
+            <div style="font-size:11px;color:var(--muted)">${a.quarter || ''} · Due: ${a.dueDate || 'No date'}</div>
+          </div>
+          <span class="owner-tag">${a.owner || 'Lead'}</span>
+          <span class="due">${a.dueDate || ''}</span>
+          <select class="status-sel" onchange="updateActionStatus('${a.actionId}', this.value)">
+            <option ${a.status==='Open'?'selected':''}>Open</option>
+            <option ${a.status==='In Progress'?'selected':''}>In Progress</option>
+            <option ${a.status==='Done'?'selected':''}>Done</option>
+          </select>
+          <button class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px" onclick="deleteAction('${a.actionId}')">Delete</button>
+        </div>`).join('')
+    : '<p class="text-muted">No action items for this member.</p>';
+}
+
+function editCurrentSession() {
+  const s = sessions.find(x => x.sessionId === currentViewSessionId);
+  if (!s) return;
+  resetForm();
+
+  // Pre-fill all form fields with saved data
+  document.getElementById('f-lead').value    = s.leadName    || '';
+  document.getElementById('f-member').value  = s.memberName  || '';
+  document.getElementById('f-date').value    = s.meetingDate || '';
+  document.getElementById('f-quarter').value = s.quarter     || 'H1 2026';
+
+  document.getElementById('f-pos-eff').value   = s.positives_efficiency  || '';
+  document.getElementById('f-pos-qual').value  = s.positives_quality     || '';
+  document.getElementById('f-pos-leave').value = s.positives_leaves      || '';
+  document.getElementById('f-pos-break').value = s.positives_breaks      || '';
+
+  document.getElementById('f-sc-eff').value    = s.shortcomings_efficiency || '';
+  document.getElementById('f-sc-qual').value   = s.shortcomings_quality    || '';
+  document.getElementById('f-sc-leave').value  = s.shortcomings_leaves     || '';
+  document.getElementById('f-sc-break').value  = s.shortcomings_breaks     || '';
+
+  document.getElementById('f-process').value        = s.process_views    || '';
+  document.getElementById('f-ops').value             = s.operations_views || '';
+  document.getElementById('f-team').value            = s.team_views       || '';
+  document.getElementById('f-personal-goals').value = s.personal_goals   || '';
+  document.getElementById('f-personal-support').value = s.personal_support || '';
+  document.getElementById('f-one-change').value     = s.one_change        || '';
+  document.getElementById('f-overall').value        = s.overall_feedback  || '';
+
+  // Mood
+  if (s.mood) setMood(s.mood);
+
+  // Rating
+  if (s.current_rating) setRating(parseInt(s.current_rating));
+
+  // Goals
+  const goals = (() => { try { return JSON.parse(s.goal_comments || '[]'); } catch(e) { return []; } })();
+  document.getElementById('goals-list').innerHTML = '';
+  goalRows = [];
+  if (goals.length) {
+    goals.forEach(g => {
+      const id  = 'goal_' + Date.now() + Math.random();
+      goalRows.push(id);
+      const div = document.createElement('div');
+      div.className = 'goal-row'; div.id = id;
+      div.innerHTML = `
+        <textarea style="min-height:36px;height:36px">${g.goal || ''}</textarea>
+        <select>
+          <option value="">Status</option>
+          <option ${g.status==='On Track'?'selected':''}>On Track</option>
+          <option ${g.status==='At Risk'?'selected':''}>At Risk</option>
+          <option ${g.status==='Delayed'?'selected':''}>Delayed</option>
+          <option ${g.status==='Completed'?'selected':''}>Completed</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeGoalRow('${id}')">✕</button>`;
+      document.getElementById('goals-list').appendChild(div);
+    });
+  } else {
+    addGoalRow();
+  }
+
+  onMemberInput(); // show history panel
+  showPage('form');
+  switchTab(0);
 }
 
 // ── Member History ────────────────────────────────────────────
@@ -802,9 +1061,17 @@ async function submitSession() {
     if (!r1.ok) throw new Error(r1.error || 'Save failed');
     for (const a of newActs) await api('saveAction', a);
     toast('Saved & synced ✅ — all leads can see this now');
+    const wasEditing = currentViewSessionId;
     resetForm();
-    showPage('dashboard');
-    await loadRemoteData(); // refresh everyone's view from Sheet
+    await loadRemoteData();
+    if (wasEditing) {
+      // Refresh view page with updated data
+      const updated = sessions.find(x => x.sessionId === wasEditing);
+      if (updated) { currentViewSessionId = wasEditing; renderViewPage(updated); showPage('view'); }
+      else showPage('dashboard');
+    } else {
+      showPage('dashboard');
+    }
   } catch(e) {
     console.error('Sheet sync failed:', e);
     toast('❌ Sync failed: ' + e.message + ' — check Settings');
