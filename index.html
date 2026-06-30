@@ -1148,13 +1148,16 @@ async function syncNow(btn){
   toast('🔄 Syncing from Google Sheets…');
   await loadRemoteData();
   if(icon)icon.classList.remove('spin');
+  toast('✅ Synced successfully');
 }
 
 // ── Remote Sync ───────────────────────────────────────────────
 async function loadRemoteData(){
-  if(!scriptUrl){document.getElementById('config-banner').classList.remove('hidden');renderDashboard();renderActions();renderInsights();return}
-  const grid=document.getElementById('members-grid');
-  if(grid)grid.innerHTML=`<div class="empty-state"><p>⏳ Loading from Google Sheets…</p></div>`;
+  if(!scriptUrl){
+    document.getElementById('config-banner').classList.remove('hidden');
+    renderDashboard();renderActions();renderInsights();
+    return;
+  }
   try{
     const[sr,ar]=await Promise.all([
       fetch(scriptUrl+'?action=getAllSessions&_='+Date.now()).then(r=>r.json()),
@@ -1162,8 +1165,22 @@ async function loadRemoteData(){
     ]);
     sessions=(sr.ok&&Array.isArray(sr.sessions))?sr.sessions:[];
     actions=(ar.ok&&Array.isArray(ar.actions))?ar.actions:[];
-    renderDashboard();renderActions();renderInsights();
-  }catch(e){console.error(e);if(grid)grid.innerHTML=`<div class="empty-state"><div class="es-icon">❌</div><p>Could not load data. Check your Apps Script URL in Settings.</p></div>`}
+
+    // Always re-render ALL pages so any active page gets fresh data
+    renderDashboard();
+    renderActions();
+    renderInsights();
+    renderTracker();
+
+    // Also refresh view page if currently open
+    if(currentViewSessionId){
+      const updated=sessions.find(x=>x.sessionId===currentViewSessionId);
+      if(updated) renderViewPage(updated);
+    }
+  }catch(e){
+    console.error('Sync failed:',e);
+    toast('❌ Sync failed — check your Apps Script URL in Settings');
+  }
 }
 async function api(action,payload){
   const encoded=encodeURIComponent(JSON.stringify(payload));
