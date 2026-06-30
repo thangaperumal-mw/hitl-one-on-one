@@ -1,203 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HITL 1-on-1 Tool — Content</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HITL Content 1-on-1 — Meltwater</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --brand:       #0f3460;
-    --brand-light: #16213e;
-    --accent:      #e94560;
-    --accent-soft: #fff0f2;
-    --teal:        #0d9e75;
-    --teal-soft:   #e8f9f4;
-    --amber:       #d97706;
-    --amber-soft:  #fffbeb;
-    --surface:     #ffffff;
-    --bg:          #f5f6fa;
-    --border:      #e2e4ea;
-    --text:        #1a1d2e;
-    --muted:       #6b7280;
-    --radius:      10px;
-    --radius-lg:   16px;
-    --shadow:      0 1px 4px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.05);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+:root{
+  --brand:#00B2A9;--brand2:#009990;--accent:#FF6B2B;--accent-soft:#fff3ee;
+  --teal:#00B2A9;--teal-soft:#e0f7f6;--amber:#d97706;--amber-soft:#fffbeb;
+  --purple:#7c3aed;--purple-soft:#f5f3ff;
+  --surface:#ffffff;--bg:#f5fffe;--border:#c8ecea;
+  --text:#0d2b2a;--muted:#4e8582;
+  --radius:10px;--radius-lg:16px;--radius-xl:20px;
+  --shadow:0 1px 4px rgba(0,178,169,.08),0 8px 24px rgba(0,178,169,.1);
+  --shadow-lg:0 4px 6px rgba(0,178,169,.08),0 16px 48px rgba(0,178,169,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 
-  /* ── Nav ── */
-  nav { background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 56px; position: sticky; top: 0; z-index: 100; }
-  nav .logo { font-size: 15px; font-weight: 700; letter-spacing: .5px; display: flex; align-items: center; gap: 10px; }
-  nav .logo span { opacity: .5; font-weight: 400; }
-  nav .nav-links { display: flex; gap: 4px; }
-  nav .nav-links button { background: none; border: none; color: rgba(255,255,255,.7); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all .15s; }
-  nav .nav-links button.active, nav .nav-links button:hover { background: rgba(255,255,255,.12); color: #fff; }
+/* ── Animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 
-  /* ── Layout ── */
-  main { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
-  .page { display: none; }
-  .page.active { display: block; }
+.anim-fade-up{animation:fadeUp .4s ease both}
+.anim-fade-in{animation:fadeIn .3s ease both}
+.anim-pop{animation:popIn .25s ease both}
 
-  /* ── Cards ── */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow); }
-  .card + .card { margin-top: 1rem; }
+/* ── Nav ── */
+nav{
+  background:linear-gradient(135deg,#00B2A9 0%,#008C85 100%);
+  color:#fff;display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:60px;position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 20px rgba(15,52,96,.35);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px;letter-spacing:.3px}
+.nav-logo .logo-icon{width:34px;height:34px;background:rgba(255,255,255,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.nav-logo .sub{font-weight:400;opacity:.5;font-size:13px}
+.nav-links{display:flex;gap:2px}
+.nav-links button{
+  background:none;border:none;color:rgba(255,255,255,.65);
+  padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;
+  transition:all .2s;display:flex;align-items:center;gap:6px;font-family:inherit;
+}
+.nav-links button:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-links button.active{background:rgba(255,255,255,.18);color:#fff;font-weight:600}
+.nav-sync{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 14px;color:#fff;cursor:pointer;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;transition:all .2s;font-family:inherit}
+.nav-sync:hover{background:rgba(0,178,169,.3)}
+.spin{animation:spin .7s linear infinite}
 
-  /* ── Page: Dashboard ── */
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; text-align: center; }
-  .stat-card .num { font-size: 32px; font-weight: 700; color: var(--brand); }
-  .stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+/* ── Layout ── */
+main{max-width:1120px;margin:0 auto;padding:2rem 1.5rem}
+.page{display:none}
+.page.active{display:block}
 
-  .members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
-  .member-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; cursor: pointer; transition: all .15s; }
-  .member-card:hover { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(15,52,96,.08); }
-  .member-card .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; margin-bottom: 10px; }
-  .member-card .name { font-weight: 600; font-size: 14px; }
-  .member-card .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
-  .badge-done    { background: var(--teal-soft); color: var(--teal); }
-  .badge-pending { background: var(--amber-soft); color: var(--amber); }
-  .badge-new     { background: #eff6ff; color: #2563eb; }
+/* ── Card ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow);transition:box-shadow .2s}
+.card+.card{margin-top:1rem}
+.card-hover:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px)}
 
-  .rating-bar { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-  .rating-bar .fill { height: 6px; border-radius: 3px; background: var(--brand); transition: width .4s; }
-  .rating-bar .track { flex: 1; height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+/* ── Config banner ── */
+#config-banner{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fcd34d;border-radius:var(--radius);padding:.85rem 1.25rem;margin-bottom:1.25rem;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:1rem;box-shadow:0 2px 8px rgba(217,119,6,.1)}
+#config-banner.hidden{display:none}
 
-  /* ── Section Headings ── */
-  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-  .section-head h2 { font-size: 16px; font-weight: 700; color: var(--brand); }
-  h3.agenda-title { font-size: 13px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: .6px; margin-bottom: .75rem; display: flex; align-items: center; gap: 8px; }
-  h3.agenda-title .step { width: 22px; height: 22px; background: var(--brand); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+/* ── Stats grid ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:1.5rem 1.25rem;display:flex;align-items:center;gap:1rem;
+  box-shadow:var(--shadow);transition:all .2s;
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.stat-icon.blue{background:linear-gradient(135deg,#e0f7f6,#b2ebe8)}
+.stat-icon.green{background:linear-gradient(135deg,#e0f7f6,#a7f0e8)}
+.stat-icon.amber{background:linear-gradient(135deg,var(--amber-soft),#fde68a)}
+.stat-icon.red{background:linear-gradient(135deg,var(--accent-soft),#fecaca)}
+.stat-num{font-size:28px;font-weight:800;color:#007a74;line-height:1}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:2px}
 
-  /* ── Form ── */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .form-grid.one { grid-template-columns: 1fr; }
-  @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
-  .field { display: flex; flex-direction: column; gap: 5px; }
-  .field label { font-size: 12px; font-weight: 600; color: var(--muted); }
-  .field input, .field select, .field textarea { border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; font-size: 13px; font-family: inherit; outline: none; transition: border .15s; background: var(--bg); color: var(--text); }
-  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brand); background: #fff; }
-  .field textarea { resize: vertical; min-height: 70px; }
-  .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+/* ── Section head ── */
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.section-head h2{font-size:16px;font-weight:700;color:#007a74;display:flex;align-items:center;gap:8px}
 
-  /* Rating label buttons */
-  .rating-label-row { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
-  .rating-label-btn { display: flex; align-items: center; gap: 12px; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 16px; cursor: pointer; background: var(--bg); text-align: left; transition: all .15s; width: 100%; }
-  .rating-label-btn:hover { border-color: var(--brand); background: #f0f4ff; }
-  .rating-label-btn.on { border-color: var(--brand); background: var(--brand); color: #fff; }
-  .rating-label-btn .rl-num { width: 24px; height: 24px; border-radius: 50%; background: var(--border); color: var(--text); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; transition: all .15s; }
-  .rating-label-btn.on .rl-num { background: rgba(255,255,255,.25); color: #fff; }
-  .rating-label-btn .rl-text { font-size: 13px; font-weight: 600; }
+/* ── Member cards ── */
+.members-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem}
+.member-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:1.25rem;transition:all .22s;cursor:pointer;position:relative;overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.member-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#007a74,#00B2A9);opacity:0;transition:opacity .2s}
+.member-card:hover{border-color:var(--brand);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.member-card:hover::before{opacity:1}
+.mc-avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#007a74,#00B2A9);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px}
+.mc-name{font-weight:700;font-size:15px;margin-top:10px;color:#007a74}
+.mc-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.rating-bar{display:flex;align-items:center;gap:8px;margin-top:10px}
+.rating-bar .track{flex:1;height:6px;border-radius:3px;background:var(--border);overflow:hidden}
+.rating-bar .fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#007a74,#00B2A9);transition:width .5s ease}
 
-  /* Mood selector */
-  .mood-row { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
-  .mood-btn { border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 14px; cursor: pointer; font-size: 13px; background: var(--bg); transition: all .15s; }
-  .mood-btn.on { border-color: var(--teal); background: var(--teal-soft); color: var(--teal); font-weight: 600; }
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600}
+.badge-done{background:var(--teal-soft);color:var(--teal)}
+.badge-pending{background:var(--amber-soft);color:var(--amber)}
+.badge-new{background:#eff6ff;color:#2563eb}
+.badge-red{background:#fee2e2;color:#dc2626}
 
-  /* Goal tracking */
-  .goal-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); }
-  .goal-row + .goal-row { margin-top: 8px; }
-  .goal-row textarea { flex: 1; border: none; background: transparent; font-size: 13px; font-family: inherit; outline: none; resize: none; min-height: 40px; }
-  .goal-row select { border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 12px; background: #fff; }
+/* ── Agenda title ── */
+h3.agenda-title{font-size:13px;font-weight:700;color:#007a74;text-transform:uppercase;letter-spacing:.6px;margin-bottom:.85rem;display:flex;align-items:center;gap:10px}
+h3.agenda-title .step{width:26px;height:26px;background:linear-gradient(135deg,#007a74,#00B2A9);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;box-shadow:0 2px 6px rgba(15,52,96,.3)}
 
-  /* Action items */
-  .action-item { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); }
-  .action-item + .action-item { margin-top: 6px; }
-  .action-item .desc { font-size: 13px; }
-  .action-item .owner-tag { font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-weight: 600; }
-  .action-item .due { font-size: 11px; color: var(--muted); }
-  .action-item .status-sel { font-size: 12px; border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; background: #fff; }
-  .action-item.done .desc { text-decoration: line-through; color: var(--muted); }
+/* ── Form ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-grid.one{grid-template-columns:1fr}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:5px}
+.field label .lico{font-size:14px}
+.field input,.field select,.field textarea{
+  border:1.5px solid var(--border);border-radius:var(--radius);padding:10px 13px;
+  font-size:13px;font-family:inherit;outline:none;transition:all .18s;
+  background:var(--bg);color:var(--text);
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(15,52,96,.08)}
+.field textarea{resize:vertical;min-height:100px;line-height:1.6}
 
-  /* Buttons */
-  .btn { border: none; border-radius: var(--radius); padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; }
-  .btn-primary { background: var(--brand); color: #fff; }
-  .btn-primary:hover { background: #0c2d57; }
-  .btn-accent { background: var(--accent); color: #fff; }
-  .btn-accent:hover { background: #c73652; }
-  .btn-ghost { background: transparent; color: var(--brand); border: 1px solid var(--border); }
-  .btn-ghost:hover { background: var(--bg); }
-  .btn-sm { padding: 5px 12px; font-size: 12px; }
-  .btn-teal { background: var(--teal); color: #fff; }
+/* ── Mood ── */
+.mood-row{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
+.mood-btn{
+  border:1.5px solid var(--border);border-radius:10px;padding:8px 16px;
+  cursor:pointer;font-size:13px;background:var(--bg);transition:all .18s;
+  display:flex;align-items:center;gap:6px;font-family:inherit;font-weight:500;
+}
+.mood-btn:hover{border-color:var(--teal);background:var(--teal-soft)}
+.mood-btn.on{border-color:var(--teal);background:var(--teal);color:#fff;font-weight:700;box-shadow:0 3px 10px rgba(13,158,117,.3)}
 
-  /* History panel */
-  .history-entry { border-left: 3px solid var(--border); padding: .75rem 1rem; margin-bottom: .75rem; border-radius: 0 var(--radius) var(--radius) 0; background: var(--bg); }
-  .history-entry.q1 { border-color: var(--teal); }
-  .history-entry.q2 { border-color: var(--accent); }
-  .history-entry.q3 { border-color: var(--amber); }
-  .history-entry .qbadge { font-size: 11px; font-weight: 700; }
+/* ── Rating labels ── */
+.rating-label-row{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.rating-label-btn{
+  display:flex;align-items:center;gap:14px;border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:12px 16px;cursor:pointer;background:var(--bg);
+  text-align:left;transition:all .18s;width:100%;font-family:inherit;
+}
+.rating-label-btn:hover{border-color:#00B2A9;background:#e0f7f6;transform:translateX(3px)}
+.rating-label-btn.on{border-color:#00B2A9;background:#00B2A9;color:#fff;box-shadow:0 4px 14px rgba(0,178,169,.3);transform:translateX(3px)}
+.rating-label-btn .rl-num{width:28px;height:28px;border-radius:8px;background:var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;transition:all .18s}
+.rating-label-btn.on .rl-num{background:rgba(255,255,255,.22);color:#fff}
+.rating-label-btn .rl-text{font-size:13px;font-weight:600}
+.rating-label-btn .rl-icon{margin-left:auto;font-size:18px;opacity:.7}
 
-  /* Toast */
-  #toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--brand); color: #fff; padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; transform: translateY(80px); opacity: 0; transition: all .3s; z-index: 999; }
-  #toast.show { transform: translateY(0); opacity: 1; }
+/* ── Goals ── */
+.goal-row{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--bg);transition:border .15s}
+.goal-row:focus-within{border-color:var(--brand);background:#fff}
+.goal-row+.goal-row{margin-top:8px}
+.goal-row textarea{flex:1;border:none;background:transparent;font-size:13px;font-family:inherit;outline:none;resize:none;min-height:40px}
+.goal-row select{border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:12px;background:#fff;font-family:inherit;outline:none;cursor:pointer}
 
-  /* Divider */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+/* ── Action items ── */
+.action-item{display:grid;grid-template-columns:1fr auto auto auto auto;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--bg);transition:all .15s}
+.action-item:focus-within{border-color:var(--brand);background:#fff}
+.action-item+.action-item{margin-top:7px}
+.action-item .desc{font-size:13px}
+.action-item .owner-tag{font-size:11px;padding:3px 9px;border-radius:12px;background:#eff6ff;color:#2563eb;font-weight:600}
+.action-item .due{font-size:11px;color:var(--muted)}
+.action-item .status-sel{font-size:12px;border:1.5px solid var(--border);border-radius:7px;padding:4px 7px;background:#fff;font-family:inherit;outline:none;cursor:pointer}
+.action-item.done .desc{text-decoration:line-through;color:var(--muted)}
 
-  /* Insights */
-  .insight-row { display: flex; align-items: center; justify-content: space-between; padding: .6rem 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-  .insight-row:last-child { border-bottom: none; }
-  .theme-tag { font-size: 12px; background: #eff6ff; color: #2563eb; padding: 2px 10px; border-radius: 12px; font-weight: 600; }
+/* ── Buttons ── */
+.btn{border:none;border-radius:var(--radius);padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:7px;font-family:inherit;letter-spacing:.2px}
+.btn-primary{background:linear-gradient(135deg,#00B2A9,#008C85);color:#fff;box-shadow:0 3px 10px rgba(0,178,169,.25)}
+.btn-primary:hover{box-shadow:0 5px 16px rgba(0,178,169,.4);transform:translateY(-1px)}
+.btn-accent{background:linear-gradient(135deg,#FF6B2B,#e05520);color:#fff;box-shadow:0 3px 10px rgba(255,107,43,.25)}
+.btn-accent:hover{box-shadow:0 5px 16px rgba(255,107,43,.4);transform:translateY(-1px)}
+.btn-teal{background:linear-gradient(135deg,var(--teal),#0a8560);color:#fff;box-shadow:0 3px 10px rgba(13,158,117,.25)}
+.btn-teal:hover{box-shadow:0 5px 16px rgba(13,158,117,.4);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:#007a74;border:1.5px solid var(--border)}
+.btn-ghost:hover{background:var(--bg);border-color:var(--brand)}
+.btn-sm{padding:6px 13px;font-size:12px}
+.btn-danger{background:#fee2e2;color:#dc2626;border:none}
+.btn-danger:hover{background:#fecaca}
 
-  /* Progress arc */
-  .arc-wrap { display: flex; align-items: center; gap: 1rem; }
-  svg.arc { width: 64px; height: 64px; }
-  .arc-label { font-size: 22px; font-weight: 700; color: var(--brand); }
-  .arc-sub { font-size: 12px; color: var(--muted); }
+/* ── Form tabs ── */
+.form-tabs{display:flex;gap:4px;margin-bottom:1rem;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:5px}
+.form-tab{
+  border:none;border-radius:9px;padding:7px 16px;font-size:12px;font-weight:600;
+  cursor:pointer;background:transparent;color:var(--muted);transition:all .18s;
+  display:flex;align-items:center;gap:6px;font-family:inherit;
+}
+.form-tab:hover{background:var(--bg);color:var(--brand)}
+.form-tab.active{background:#00B2A9;color:#fff;box-shadow:0 2px 8px rgba(0,178,169,.35)}
 
-  /* Tabs inside form */
-  .form-tabs { display: flex; gap: 4px; margin-bottom: 1rem; flex-wrap: wrap; }
-  .form-tab { border: 1px solid var(--border); border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 600; cursor: pointer; background: var(--bg); transition: all .15s; }
-  .form-tab.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+/* ── History panel ── */
+.history-entry{border-left:3px solid var(--border);padding:.85rem 1rem;margin-bottom:.75rem;border-radius:0 var(--radius) var(--radius) 0;background:var(--bg);animation:slideIn .3s ease}
+.history-entry.q1{border-color:var(--teal)}
+.history-entry.q2{border-color:var(--accent)}
+.history-entry.q3{border-color:var(--amber)}
+.history-entry.q4{border-color:var(--purple)}
 
-  /* Read-only view fields */
-  .view-field { margin-bottom: 1rem; }
-  .view-field .vf-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
-  .view-field .vf-value { font-size: 13px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; min-height: 36px; white-space: pre-wrap; line-height: 1.6; }
-  .view-field .vf-value.empty { color: var(--muted); font-style: italic; }
-  .view-summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center; }
-  .view-summary-card .vs-val { font-size: 22px; font-weight: 700; color: var(--brand); }
-  .view-summary-card .vs-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; }
-  .goal-view-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); margin-bottom: 8px; font-size: 13px; }
-  .goal-status-pill { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 12px; white-space: nowrap; }
-  .pill-on-track  { background: var(--teal-soft);  color: var(--teal); }
-  .pill-at-risk   { background: var(--amber-soft); color: var(--amber); }
-  .pill-delayed   { background: #fee2e2; color: #dc2626; }
-  .pill-completed { background: #eff6ff; color: #2563eb; }
-  .rating-view-pill { display: inline-flex; align-items: center; gap: 10px; border: 2px solid var(--brand); border-radius: var(--radius); padding: 10px 20px; font-weight: 700; color: var(--brand); font-size: 14px; background: #f0f4ff; }
-  .rating-view-pill .rv-num { width: 28px; height: 28px; border-radius: 50%; background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
-  .flex { display: flex; }
-  .flex-between { display: flex; align-items: center; justify-content: space-between; }
-  .gap-8 { gap: 8px; }
-  .gap-12 { gap: 12px; }
-  .mt-1 { margin-top: .5rem; }
-  .mt-2 { margin-top: 1rem; }
-  .mt-3 { margin-top: 1.5rem; }
-  .text-muted { color: var(--muted); font-size: 12px; }
-  .hidden { display: none !important; }
-  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); }
-  .empty-state svg { opacity: .3; margin-bottom: 1rem; }
+/* ── Toast ── */
+#toast{position:fixed;bottom:2rem;right:2rem;background:linear-gradient(135deg,#00B2A9,#008C85);color:#fff;padding:12px 22px;border-radius:var(--radius);font-size:13px;font-weight:600;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:999;box-shadow:0 8px 24px rgba(15,52,96,.35);display:flex;align-items:center;gap:8px;max-width:360px}
+#toast.show{transform:translateY(0);opacity:1}
 
-  /* Config banner */
-  #config-banner { background: #fff3cd; border: 1px solid #ffc107; border-radius: var(--radius); padding: .75rem 1rem; margin-bottom: 1rem; font-size: 13px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-  #config-banner.hidden { display: none; }
+/* ── Divider ── */
+.divider{border:none;border-top:1px solid var(--border);margin:1.25rem 0}
+
+/* ── Read-only view ── */
+.view-field{margin-bottom:1rem}
+.view-field .vf-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.view-field .vf-value{font-size:13px;color:var(--text);background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius);padding:11px 13px;min-height:40px;white-space:pre-wrap;line-height:1.7}
+.view-field .vf-value.empty{color:var(--muted);font-style:italic}
+.view-summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;text-align:center;box-shadow:var(--shadow);animation:popIn .3s ease}
+.view-summary-card .vs-val{font-size:24px;font-weight:800;color:#007a74;line-height:1}
+.view-summary-card .vs-lbl{font-size:11px;color:var(--muted);margin-top:4px}
+.goal-view-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--bg);margin-bottom:8px;font-size:13px;animation:slideIn .25s ease}
+.goal-status-pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;white-space:nowrap}
+.pill-on-track{background:var(--teal-soft);color:var(--teal)}
+.pill-at-risk{background:var(--amber-soft);color:var(--amber)}
+.pill-delayed{background:#fee2e2;color:#dc2626}
+.pill-completed{background:#eff6ff;color:#2563eb}
+.pill-not-started{background:#f3f4f6;color:#6b7280}
+.pill-review{background:#f5f3ff;color:#7c3aed}
+.rating-view-pill{display:inline-flex;align-items:center;gap:12px;border:2px solid #00B2A9;border-radius:var(--radius);padding:12px 22px;font-weight:700;color:#007a74;font-size:14px;background:linear-gradient(135deg,#e0f7f6,#c8efed)}
+.rating-view-pill .rv-num{width:30px;height:30px;border-radius:8px;background:#00B2A9;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+
+/* ── Insights ── */
+.insight-row{display:flex;align-items:center;justify-content:space-between;padding:.65rem 0;border-bottom:1px solid var(--border);font-size:13px}
+.insight-row:last-child{border-bottom:none}
+.theme-tag{font-size:12px;background:#eff6ff;color:#2563eb;padding:3px 11px;border-radius:12px;font-weight:600}
+
+/* ── Utility ── */
+.flex{display:flex}.flex-between{display:flex;align-items:center;justify-content:space-between}
+.gap-8{gap:8px}.gap-12{gap:12px}
+.mt-1{margin-top:.5rem}.mt-2{margin-top:1rem}.mt-3{margin-top:1.5rem}
+.text-muted{color:var(--muted);font-size:12px}
+.hidden{display:none!important}
+.empty-state{text-align:center;padding:3.5rem 1rem;color:var(--muted)}
+.empty-state .es-icon{font-size:48px;margin-bottom:1rem;opacity:.4}
+
+/* ── Page header ── */
+.page-header{margin-bottom:1.75rem}
+.page-header h1{font-size:22px;font-weight:800;color:#007a74;display:flex;align-items:center;gap:10px}
+.page-header p{color:var(--muted);font-size:13px;margin-top:3px}
+
+/* ── Settings card ── */
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1rem}
+.settings-card h2{font-size:14px;font-weight:700;color:#007a74;margin-bottom:.25rem;display:flex;align-items:center;gap:8px}
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo">
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="white" stroke-width="1.5"/><path d="M6 10h8M10 6v8" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-    HITL 1-on-1 Tool <span>/ Content</span>
+  <div class="nav-logo">
+    <div style="width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+      <img src="data:image/png;base64,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" alt="Meltwater" style="width:36px;height:36px;object-fit:contain;filter:brightness(0) invert(1)"/>
+    </div>
+    <div style="font-weight:800;font-size:15px;letter-spacing:.2px;line-height:1">HITL Content 1-on-1</div>
   </div>
   <div class="nav-links">
-    <button class="active" onclick="showPage('dashboard')">Dashboard</button>
-    <button onclick="showPage('form')">New Session</button>
-    <button onclick="showPage('actions')">Action Items</button>
-    <button onclick="showPage('insights')">Insights</button>
-    <button onclick="showPage('settings')">Settings</button>
+    <button class="active" onclick="showPage('dashboard')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button onclick="currentViewSessionId=null;resetForm();showPage('form')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      New Session
+    </button>
+    <button onclick="showPage('tracker')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      Tracker
+    </button>
+    <button onclick="showPage('actions')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Actions
+    </button>
+    <button onclick="showPage('insights')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Insights
+    </button>
+    <button onclick="showPage('settings')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
   </div>
+  <button class="nav-sync" onclick="syncNow(this)" title="Sync data from Google Sheets">
+    <svg id="sync-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    Sync
+  </button>
 </nav>
 
 <main>
@@ -205,95 +300,139 @@
 <!-- ══════════════════════ DASHBOARD ══════════════════════ -->
 <div id="page-dashboard" class="page active">
   <div id="config-banner">
-    ⚠️ Google Sheets not connected. Data will be saved locally only. Go to <strong>Settings</strong> to add your Apps Script URL.
-    <button class="btn btn-sm btn-ghost" onclick="showPage('settings')">Open Settings</button>
+    <span>⚠️ Google Sheets not connected. Go to <strong>Settings</strong> to add your Apps Script URL.</span>
+    <button class="btn btn-sm btn-ghost" onclick="showPage('settings')">Open Settings →</button>
   </div>
 
-  <div class="flex-between" style="margin-bottom:1.5rem">
+  <div class="flex-between page-header">
     <div>
-      <h1 style="font-size:20px;font-weight:700;color:var(--brand)">H1 2026 — 1-on-1 Sessions</h1>
-      <p class="text-muted mt-1">All leads · All members</p>
+      <h1>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#007a74" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        H1 2026 — 1-on-1 Sessions
+      </h1>
+      <p>All leads · All members · Real-time sync</p>
     </div>
-    <button class="btn btn-accent" onclick="currentViewSessionId=null;showPage('form')">+ New Session</button>
+    <button class="btn btn-accent" onclick="currentViewSessionId=null;resetForm();showPage('form')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      New Session
+    </button>
   </div>
 
-  <div class="stats-grid" id="stats-grid">
-    <div class="stat-card"><div class="num" id="stat-total">0</div><div class="lbl">Total Sessions</div></div>
-    <div class="stat-card"><div class="num" id="stat-done">0</div><div class="lbl">Completed</div></div>
-    <div class="stat-card"><div class="num" id="stat-avg">—</div><div class="lbl">Avg Rating</div></div>
-    <div class="stat-card"><div class="num" id="stat-actions">0</div><div class="lbl">Open Actions</div></div>
+  <div class="stats-grid">
+    <div class="stat-card anim-fade-up" style="animation-delay:.05s">
+      <div class="stat-icon blue">📋</div>
+      <div><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Total Sessions</div></div>
+    </div>
+    <div class="stat-card anim-fade-up" style="animation-delay:.1s">
+      <div class="stat-icon green">✅</div>
+      <div><div class="stat-num" id="stat-done">0</div><div class="stat-lbl">Completed</div></div>
+    </div>
+    <div class="stat-card anim-fade-up" style="animation-delay:.15s">
+      <div class="stat-icon amber">⭐</div>
+      <div><div class="stat-num" id="stat-avg">—</div><div class="stat-lbl">Avg Rating</div></div>
+    </div>
+    <div class="stat-card anim-fade-up" style="animation-delay:.2s">
+      <div class="stat-icon red">🎯</div>
+      <div><div class="stat-num" id="stat-actions">0</div><div class="stat-lbl">Open Actions</div></div>
+    </div>
   </div>
 
-  <div class="card">
+  <div class="card anim-fade-up" style="animation-delay:.25s">
     <div class="section-head">
-      <h2>Team Members</h2>
-      <input type="text" id="search-members" placeholder="Search members..." style="width:200px;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;outline:none;" oninput="renderMemberCards()" />
+      <h2>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007a74" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Team Members
+      </h2>
+      <input type="text" id="search-members" placeholder="🔍 Search members…" oninput="renderMemberCards()" style="width:210px;border:1.5px solid var(--border);border-radius:9px;padding:7px 13px;font-size:13px;outline:none;font-family:inherit;transition:border .15s" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='var(--border)'"/>
     </div>
     <div class="members-grid" id="members-grid">
       <div class="empty-state">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <div class="es-icon">👥</div>
         <p>No sessions yet. Start your first 1-on-1.</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════ FORM ══════════════════════ -->
+<!-- ══════════════════════ NEW SESSION FORM ══════════════════════ -->
 <div id="page-form" class="page">
-  <div class="flex-between" style="margin-bottom:1.5rem">
+  <div class="flex-between page-header">
     <div>
-      <h1 style="font-size:20px;font-weight:700;color:var(--brand)">New 1-on-1 Session</h1>
-      <p class="text-muted mt-1">Fill all sections during or after the meeting</p>
+      <h1>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007a74" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        New 1-on-1 Session
+      </h1>
+      <p>Fill all sections during or after the meeting</p>
     </div>
     <button class="btn btn-ghost" onclick="showPage('dashboard')">← Back</button>
   </div>
 
-  <!-- History Panel (shown when member selected) -->
-  <div id="history-panel" class="card hidden" style="margin-bottom:1rem; border-left: 4px solid var(--teal);">
+  <!-- History Panel -->
+  <div id="history-panel" class="card hidden" style="margin-bottom:1rem;border-left:4px solid var(--teal);animation:slideIn .3s ease">
     <div class="flex-between" style="margin-bottom:.75rem">
-      <h2 style="font-size:14px;font-weight:700;color:var(--teal)">📋 Historical Context</h2>
+      <h2 style="font-size:14px;font-weight:700;color:var(--teal);display:flex;align-items:center;gap:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Historical Context
+      </h2>
       <span class="text-muted" id="history-member-name"></span>
     </div>
     <div id="history-entries"></div>
   </div>
 
+  <!-- Carry-Forward Actions Panel -->
+  <div id="carry-forward-section" class="carry-section hidden">
+    <h4>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      Carry-Forward Open Actions from Previous Sessions
+    </h4>
+    <p style="font-size:12px;color:#92400e;margin-bottom:.75rem">These action items are still open. They will be linked to this new session. Uncheck any you want to exclude.</p>
+    <div id="carry-items"></div>
+  </div>
+
   <div class="form-tabs">
-    <button class="form-tab active" onclick="switchTab(0)">① Meeting Info</button>
-    <button class="form-tab" onclick="switchTab(1)">② Performance</button>
-    <button class="form-tab" onclick="switchTab(2)">③ Team & Goals</button>
-    <button class="form-tab" onclick="switchTab(3)">④ Rating & Plans</button>
-    <button class="form-tab" onclick="switchTab(4)">⑤ Action Items</button>
+    <button class="form-tab active" onclick="switchTab(0)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>① Meeting Info
+    </button>
+    <button class="form-tab" onclick="switchTab(1)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>② Performance
+    </button>
+    <button class="form-tab" onclick="switchTab(2)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>③ Team & Goals
+    </button>
+    <button class="form-tab" onclick="switchTab(3)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>④ Rating & Plans
+    </button>
+    <button class="form-tab" onclick="switchTab(4)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>⑤ Actions
+    </button>
   </div>
 
   <!-- Tab 0: Meeting Info -->
-  <div class="card tab-panel" data-tab="0">
+  <div class="card tab-panel anim-pop" data-tab="0">
     <h3 class="agenda-title"><span class="step">1</span> Meeting Information</h3>
     <div class="form-grid">
       <div class="field">
-        <label>Lead Name</label>
-        <input type="text" id="f-lead" placeholder="Your name" />
+        <label><span class="lico">👤</span> Lead Name</label>
+        <input type="text" id="f-lead" placeholder="Your name"/>
       </div>
       <div class="field">
-        <label>Member Name</label>
-        <input type="text" id="f-member" placeholder="Team member name" oninput="onMemberInput()" />
+        <label><span class="lico">🙋</span> Member Name</label>
+        <input type="text" id="f-member" placeholder="Team member name" oninput="onMemberInputWithCarry()"/>
       </div>
       <div class="field">
-        <label>Meeting Date</label>
-        <input type="date" id="f-date" />
+        <label><span class="lico">📅</span> Meeting Date</label>
+        <input type="date" id="f-date"/>
       </div>
       <div class="field">
-        <label>Quarter</label>
+        <label><span class="lico">🗓️</span> Quarter</label>
         <select id="f-quarter">
-          <option>H1 2026</option>
-          <option>Q3 2026</option>
-          <option>Q4 2026</option>
-          <option>H1 2027</option>
+          <option>H1 2026</option><option>Q3 2026</option><option>Q4 2026</option><option>H1 2027</option>
         </select>
       </div>
     </div>
-    <hr class="divider" />
+    <hr class="divider"/>
     <div class="field">
-      <label>Member's Mood / Energy at Start of Meeting</label>
+      <label><span class="lico">😊</span> Member's Mood / Energy at Start of Meeting</label>
       <div class="mood-row" id="mood-row">
         <button class="mood-btn" data-mood="Very Positive" onclick="setMood('Very Positive')">😊 Very Positive</button>
         <button class="mood-btn" data-mood="Positive" onclick="setMood('Positive')">🙂 Positive</button>
@@ -302,915 +441,672 @@
         <button class="mood-btn" data-mood="Disengaged" onclick="setMood('Disengaged')">😔 Disengaged</button>
       </div>
     </div>
-    <div class="flex" style="justify-content:flex-end;margin-top:1.25rem">
-      <button class="btn btn-primary" onclick="switchTab(1)">Next →</button>
+    <div class="flex" style="justify-content:flex-end;margin-top:1.5rem">
+      <button class="btn btn-primary" onclick="switchTab(1)">Next → Performance</button>
     </div>
   </div>
 
   <!-- Tab 1: Performance -->
-  <div class="card tab-panel hidden" data-tab="1">
-    <h3 class="agenda-title"><span class="step">2</span> Things Worked Out Well — Positives</h3>
-    <div class="sub-grid">
-      <div class="field"><label>Efficiency</label><textarea id="f-pos-eff" placeholder="What went well in efficiency?"></textarea></div>
-      <div class="field"><label>Quality</label><textarea id="f-pos-qual" placeholder="Quality wins this period?"></textarea></div>
-      <div class="field"><label>Leaves & Attendance</label><textarea id="f-pos-leave" placeholder="Good attendance patterns?"></textarea></div>
-      <div class="field"><label>Breaks & Habits</label><textarea id="f-pos-break" placeholder="Positive habits observed?"></textarea></div>
+  <div class="card tab-panel hidden anim-pop" data-tab="1">
+    <h3 class="agenda-title">
+      <span class="step">2</span> Things Worked Out Well
+      <span style="margin-left:4px;font-size:11px;font-weight:500;color:var(--teal);text-transform:none;background:var(--teal-soft);padding:2px 9px;border-radius:10px">✅ Positives</span>
+    </h3>
+    <div class="field">
+      <label><span class="lico">💚</span> Share what went well — efficiency, quality, attendance, habits</label>
+      <textarea id="f-positives" placeholder="e.g. Consistently met daily targets, maintained quality scores above threshold, good attendance with minimal unplanned leaves, proactive in flagging blockers early…" style="min-height:120px"></textarea>
     </div>
 
-    <hr class="divider" />
-    <h3 class="agenda-title"><span class="step">3</span> Things Need to Improve — Shortcomings</h3>
-    <div class="sub-grid">
-      <div class="field"><label>Efficiency</label><textarea id="f-sc-eff" placeholder="Efficiency gaps to address?"></textarea></div>
-      <div class="field"><label>Quality</label><textarea id="f-sc-qual" placeholder="Quality areas to improve?"></textarea></div>
-      <div class="field"><label>Leaves & Attendance</label><textarea id="f-sc-leave" placeholder="Attendance concerns?"></textarea></div>
-      <div class="field"><label>Breaks & Habits</label><textarea id="f-sc-break" placeholder="Habits that need correction?"></textarea></div>
+    <hr class="divider"/>
+    <h3 class="agenda-title">
+      <span class="step">3</span> Things Need to Improve
+      <span style="margin-left:4px;font-size:11px;font-weight:500;color:var(--accent);text-transform:none;background:var(--accent-soft);padding:2px 9px;border-radius:10px">⚠️ Shortcomings</span>
+    </h3>
+    <div class="field">
+      <label><span class="lico">🔧</span> Share areas to improve — efficiency, quality, attendance, habits</label>
+      <textarea id="f-shortcomings" placeholder="e.g. TAT slipped in weeks 3–4, re-work rate on source annotation needs attention, a few unplanned half-days impacted team coverage, break schedule inconsistency noted…" style="min-height:120px"></textarea>
     </div>
-    <div class="flex" style="justify-content:space-between;margin-top:1.25rem">
+
+    <div class="flex" style="justify-content:space-between;margin-top:1.5rem">
       <button class="btn btn-ghost" onclick="switchTab(0)">← Back</button>
-      <button class="btn btn-primary" onclick="switchTab(2)">Next →</button>
+      <button class="btn btn-primary" onclick="switchTab(2)">Next → Team & Goals</button>
     </div>
   </div>
 
   <!-- Tab 2: Team & Goals -->
-  <div class="card tab-panel hidden" data-tab="2">
+  <div class="card tab-panel hidden anim-pop" data-tab="2">
     <h3 class="agenda-title"><span class="step">4</span> Process, Operations & Team — Their Views</h3>
     <div class="form-grid one">
-      <div class="field"><label>Process Comments</label><textarea id="f-process" placeholder="Their views on current processes..."></textarea></div>
-      <div class="field"><label>Operations Comments</label><textarea id="f-ops" placeholder="Their views on daily operations..."></textarea></div>
-      <div class="field"><label>Team Dynamics Comments</label><textarea id="f-team" placeholder="Their thoughts on team collaboration..."></textarea></div>
+      <div class="field">
+        <label><span class="lico">⚙️</span> Process Comments</label>
+        <textarea id="f-process" placeholder="Their views on current processes…"></textarea>
+      </div>
+      <div class="field">
+        <label><span class="lico">🏭</span> Operations Comments</label>
+        <textarea id="f-ops" placeholder="Their views on daily operations…"></textarea>
+      </div>
+      <div class="field">
+        <label><span class="lico">🤝</span> Team Dynamics Comments</label>
+        <textarea id="f-team" placeholder="Their thoughts on team collaboration…"></textarea>
+      </div>
     </div>
-
-    <hr class="divider" />
+    <hr class="divider"/>
     <h3 class="agenda-title"><span class="step">5</span> Goal Tracking — GPS Goals Status</h3>
     <div id="goals-list"></div>
-    <button class="btn btn-ghost btn-sm mt-1" onclick="addGoalRow()">+ Add Goal</button>
-
-    <div class="flex" style="justify-content:space-between;margin-top:1.25rem">
+    <button class="btn btn-ghost btn-sm mt-1" onclick="addGoalRow()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      Add Goal
+    </button>
+    <div class="flex" style="justify-content:space-between;margin-top:1.5rem">
       <button class="btn btn-ghost" onclick="switchTab(1)">← Back</button>
-      <button class="btn btn-primary" onclick="switchTab(3)">Next →</button>
+      <button class="btn btn-primary" onclick="switchTab(3)">Next → Rating & Plans</button>
     </div>
   </div>
 
   <!-- Tab 3: Rating & Plans -->
-  <div class="card tab-panel hidden" data-tab="3">
+  <div class="card tab-panel hidden anim-pop" data-tab="3">
     <h3 class="agenda-title"><span class="step">6</span> Current Rating</h3>
     <div class="field">
-      <label>Select performance level</label>
+      <label><span class="lico">⭐</span> Select performance level</label>
       <div class="rating-label-row" id="rating-label-row">
-        <button class="rating-label-btn" data-value="1" onclick="setRating(1)"><span class="rl-num">1</span><span class="rl-text">Below Expectations</span></button>
-        <button class="rating-label-btn" data-value="2" onclick="setRating(2)"><span class="rl-num">2</span><span class="rl-text">Needs Development</span></button>
-        <button class="rating-label-btn" data-value="3" onclick="setRating(3)"><span class="rl-num">3</span><span class="rl-text">Consistently Meets Expectations</span></button>
-        <button class="rating-label-btn" data-value="4" onclick="setRating(4)"><span class="rl-num">4</span><span class="rl-text">Exceeds Expectations</span></button>
-        <button class="rating-label-btn" data-value="5" onclick="setRating(5)"><span class="rl-num">5</span><span class="rl-text">Sets New Standard</span></button>
+        <button class="rating-label-btn" data-value="1" onclick="setRating(1)"><span class="rl-num">1</span><span class="rl-text">Below Expectations</span><span class="rl-icon">😔</span></button>
+        <button class="rating-label-btn" data-value="2" onclick="setRating(2)"><span class="rl-num">2</span><span class="rl-text">Needs Development</span><span class="rl-icon">📈</span></button>
+        <button class="rating-label-btn" data-value="3" onclick="setRating(3)"><span class="rl-num">3</span><span class="rl-text">Consistently Meets Expectations</span><span class="rl-icon">✅</span></button>
+        <button class="rating-label-btn" data-value="4" onclick="setRating(4)"><span class="rl-num">4</span><span class="rl-text">Exceeds Expectations</span><span class="rl-icon">🌟</span></button>
+        <button class="rating-label-btn" data-value="5" onclick="setRating(5)"><span class="rl-num">5</span><span class="rl-text">Sets New Standard</span><span class="rl-icon">🚀</span></button>
       </div>
-      <input type="hidden" id="f-rating" value="" />
+      <input type="hidden" id="f-rating" value=""/>
     </div>
-
-    <hr class="divider" />
+    <hr class="divider"/>
     <h3 class="agenda-title"><span class="step">7</span> Personal Goals & Support</h3>
     <div class="form-grid">
-      <div class="field"><label>Personal Goals Shared</label><textarea id="f-personal-goals" placeholder="Goals they want to achieve personally or professionally..."></textarea></div>
-      <div class="field"><label>Support Needed from Lead/Team</label><textarea id="f-personal-support" placeholder="What support or resources do they need?"></textarea></div>
+      <div class="field">
+        <label><span class="lico">🎯</span> Personal Goals Shared</label>
+        <textarea id="f-personal-goals" placeholder="Goals they want to achieve personally or professionally…"></textarea>
+      </div>
+      <div class="field">
+        <label><span class="lico">🤲</span> Support Needed from Lead/Team</label>
+        <textarea id="f-personal-support" placeholder="What support or resources do they need?"></textarea>
+      </div>
     </div>
-
-    <hr class="divider" />
+    <hr class="divider"/>
     <h3 class="agenda-title"><span class="step">8</span> One Change to Improve More</h3>
     <div class="field">
-      <textarea id="f-one-change" placeholder="What single change (process, operation, or team) would make the biggest difference for them?" style="min-height:80px"></textarea>
+      <label><span class="lico">💡</span> What single change would make the biggest difference?</label>
+      <textarea id="f-one-change" placeholder="Process, operation, or team change they feel would uplift their performance or morale…" style="min-height:90px"></textarea>
     </div>
-
-    <hr class="divider" />
-    <h3 class="agenda-title" style="margin-top:.5rem"><span class="step">✓</span> Overall Feedback</h3>
+    <hr class="divider"/>
+    <h3 class="agenda-title"><span class="step">✓</span> Overall Feedback</h3>
     <div class="field">
-      <label>Feedback on Process, Operations, Team, Leads & Manager</label>
-      <textarea id="f-overall" placeholder="Their overall feedback covering all areas..." style="min-height:90px"></textarea>
+      <label><span class="lico">📝</span> Feedback covering Process, Operations, Team, Leads & Manager</label>
+      <textarea id="f-overall" placeholder="Their overall feedback across all areas…" style="min-height:100px"></textarea>
     </div>
-
-    <div class="flex" style="justify-content:space-between;margin-top:1.25rem">
+    <div class="flex" style="justify-content:space-between;margin-top:1.5rem">
       <button class="btn btn-ghost" onclick="switchTab(2)">← Back</button>
-      <button class="btn btn-primary" onclick="switchTab(4)">Next →</button>
+      <button class="btn btn-primary" onclick="switchTab(4)">Next → Action Items</button>
     </div>
   </div>
 
   <!-- Tab 4: Action Items -->
-  <div class="card tab-panel hidden" data-tab="4">
-    <h3 class="agenda-title"><span class="step">✓</span> Action Items from This Meeting</h3>
-    <p class="text-muted" style="margin-bottom:1rem">Capture commitments made by both lead and member. These will be tracked and carried forward.</p>
-
+  <div class="card tab-panel hidden anim-pop" data-tab="4">
+    <h3 class="agenda-title">
+      <span class="step">✓</span> Action Items from This Meeting
+    </h3>
+    <p class="text-muted" style="margin-bottom:1rem">Capture commitments made by both lead and member. These will be tracked and carried into Q3.</p>
     <div id="new-action-list"></div>
-    <button class="btn btn-ghost btn-sm mt-1" onclick="addActionRow()">+ Add Action Item</button>
-
-    <hr class="divider" />
+    <button class="btn btn-ghost btn-sm mt-1" onclick="addActionRow()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      Add Action Item
+    </button>
+    <hr class="divider"/>
     <div class="flex" style="justify-content:space-between;align-items:center;margin-top:.5rem">
       <button class="btn btn-ghost" onclick="switchTab(3)">← Back</button>
-      <button class="btn btn-accent" onclick="submitSession()">💾 Save Session</button>
+      <button class="btn btn-accent" onclick="submitSession()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Session
+      </button>
     </div>
   </div>
 </div>
 
 <!-- ══════════════════════ VIEW SESSION ══════════════════════ -->
 <div id="page-view" class="page">
-  <div class="flex-between" style="margin-bottom:1.5rem">
+  <div class="flex-between page-header">
     <div>
-      <h1 style="font-size:20px;font-weight:700;color:var(--brand)" id="view-title">Session Details</h1>
-      <p class="text-muted mt-1" id="view-meta"></p>
+      <h1 id="view-title">Session Details</h1>
+      <p id="view-meta"></p>
     </div>
     <div class="flex gap-8">
       <button class="btn btn-ghost" onclick="showPage('dashboard')">← Back</button>
-      <button class="btn btn-primary" id="btn-edit-session" onclick="editCurrentSession()">✏️ Edit Session</button>
+      <button class="btn btn-primary" onclick="editCurrentSession()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit Session
+      </button>
     </div>
   </div>
-
-  <!-- Summary cards row -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem" id="view-summary-row"></div>
-
-  <!-- Section: Positives -->
-  <div class="card">
-    <h3 class="agenda-title"><span class="step">2</span> Things Worked Out Well — Positives</h3>
-    <div class="sub-grid" id="view-positives"></div>
-  </div>
-
-  <!-- Section: Shortcomings -->
-  <div class="card">
-    <h3 class="agenda-title"><span class="step">3</span> Things Need to Improve — Shortcomings</h3>
-    <div class="sub-grid" id="view-shortcomings"></div>
-  </div>
-
-  <!-- Section: Team & Process -->
-  <div class="card">
-    <h3 class="agenda-title"><span class="step">4</span> Process, Operations & Team Views</h3>
-    <div id="view-team"></div>
-  </div>
-
-  <!-- Section: Goals -->
-  <div class="card">
-    <h3 class="agenda-title"><span class="step">5</span> Goal Tracking</h3>
-    <div id="view-goals"></div>
-  </div>
-
-  <!-- Section: Rating & Plans -->
-  <div class="card">
-    <h3 class="agenda-title"><span class="step">6–8</span> Rating, Personal Goals & One Change</h3>
-    <div id="view-rating-plans"></div>
-  </div>
-
-  <!-- Section: Overall Feedback -->
-  <div class="card">
-    <h3 class="agenda-title"><span class="step">✓</span> Overall Feedback</h3>
-    <div id="view-overall"></div>
-  </div>
-
-  <!-- Section: Action Items -->
-  <div class="card">
-    <h3 class="agenda-title"><span class="step">✓</span> Action Items</h3>
-    <div id="view-actions-list"></div>
-  </div>
+  <div class="card anim-fade-up"><h3 class="agenda-title"><span class="step">2</span> Positives</h3><div id="view-positives"></div></div>
+  <div class="card anim-fade-up"><h3 class="agenda-title"><span class="step">3</span> Shortcomings</h3><div id="view-shortcomings"></div></div>
+  <div class="card anim-fade-up"><h3 class="agenda-title"><span class="step">4</span> Process, Operations & Team Views</h3><div id="view-team"></div></div>
+  <div class="card anim-fade-up"><h3 class="agenda-title"><span class="step">5</span> Goal Tracking</h3><div id="view-goals"></div></div>
+  <div class="card anim-fade-up"><h3 class="agenda-title"><span class="step">6–8</span> Rating, Personal Goals & One Change</h3><div id="view-rating-plans"></div></div>
+  <div class="card anim-fade-up"><h3 class="agenda-title"><span class="step">✓</span> Overall Feedback</h3><div id="view-overall"></div></div>
+  <div class="card anim-fade-up"><h3 class="agenda-title"><span class="step">✓</span> Action Items</h3><div id="view-actions-list"></div></div>
 </div>
+
+<!-- ══════════════════════ ACTION ITEMS ══════════════════════ -->
 <div id="page-actions" class="page">
-  <div class="flex-between" style="margin-bottom:1.5rem">
+  <div class="flex-between page-header">
     <div>
-      <h1 style="font-size:20px;font-weight:700;color:var(--brand)">Action Item Tracker</h1>
-      <p class="text-muted mt-1">All commitments across team members</p>
+      <h1>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007a74" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Action Item Tracker
+      </h1>
+      <p>All commitments across team members</p>
     </div>
     <div class="flex gap-8">
-      <select id="action-filter-status" onchange="renderActions()" style="border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;outline:none;">
-        <option value="">All Status</option>
-        <option value="Open">Open</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Done">Done</option>
+      <select id="action-filter-status" onchange="renderActions()" style="border:1.5px solid var(--border);border-radius:9px;padding:7px 13px;font-size:13px;outline:none;font-family:inherit;cursor:pointer">
+        <option value="">All Status</option><option>Open</option><option>In Progress</option><option>Done</option>
       </select>
-      <select id="action-filter-member" onchange="renderActions()" style="border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;outline:none;">
+      <select id="action-filter-member" onchange="renderActions()" style="border:1.5px solid var(--border);border-radius:9px;padding:7px 13px;font-size:13px;outline:none;font-family:inherit;cursor:pointer">
         <option value="">All Members</option>
       </select>
     </div>
   </div>
-
-  <div class="card">
-    <div id="actions-list"><div class="empty-state"><p>No action items yet.</p></div></div>
-  </div>
+  <div class="card"><div id="actions-list"><div class="empty-state"><div class="es-icon">🎯</div><p>No action items yet.</p></div></div></div>
 </div>
 
 <!-- ══════════════════════ INSIGHTS ══════════════════════ -->
 <div id="page-insights" class="page">
-  <div class="flex-between" style="margin-bottom:1.5rem">
+  <div class="flex-between page-header">
     <div>
-      <h1 style="font-size:20px;font-weight:700;color:var(--brand)">Team Insights</h1>
-      <p class="text-muted mt-1">Patterns across all 1-on-1 sessions</p>
+      <h1>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007a74" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Team Insights
+      </h1>
+      <p>Patterns and trends across all 1-on-1 sessions</p>
     </div>
+    <select id="insights-lead-filter" onchange="renderInsights()" style="border:1.5px solid var(--border);border-radius:9px;padding:7px 14px;font-size:13px;outline:none;font-family:inherit;cursor:pointer;background:var(--surface);font-weight:600;color:#007a74">
+      <option value="">All Leads</option>
+    </select>
   </div>
-
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
-    <div class="card">
-      <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Rating Distribution</h2>
-      <div id="rating-dist"></div>
-    </div>
-    <div class="card">
-      <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Mood Overview</h2>
-      <div id="mood-dist"></div>
-    </div>
+    <div class="card"><h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:#007a74;display:flex;align-items:center;gap:8px">⭐ Rating Distribution</h2><div id="rating-dist"></div></div>
+    <div class="card"><h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:#007a74;display:flex;align-items:center;gap:8px">😊 Mood Overview</h2><div id="mood-dist"></div></div>
   </div>
-
-  <div class="card">
-    <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Common Themes in "One Change" Requests</h2>
-    <div id="themes-list"><div class="empty-state"><p>Complete more sessions to see themes.</p></div></div>
-  </div>
-
-  <div class="card" style="margin-top:1rem">
-    <h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:var(--brand)">Action Item Health</h2>
-    <div id="action-health"></div>
-  </div>
+  <div class="card"><h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:#007a74;display:flex;align-items:center;gap:8px">💡 Common Themes in "One Change" Requests</h2><div id="themes-list"><div class="empty-state"><p>Complete more sessions to see themes.</p></div></div></div>
+  <div class="card" style="margin-top:1rem"><h2 style="font-size:14px;font-weight:700;margin-bottom:1rem;color:#007a74;display:flex;align-items:center;gap:8px">🎯 Action Item Health</h2><div id="action-health"></div></div>
 </div>
 
 <!-- ══════════════════════ SETTINGS ══════════════════════ -->
 <div id="page-settings" class="page">
-  <h1 style="font-size:20px;font-weight:700;color:var(--brand);margin-bottom:1.5rem">Settings</h1>
-
-  <div class="card" style="border-color:var(--teal);border-width:2px">
-    <h2 style="font-size:14px;font-weight:700;margin-bottom:.25rem;color:var(--teal)">Google Sheets URL — Shared Configuration</h2>
-    <p class="text-muted" style="margin-bottom:1rem;font-size:12px">This URL is stored in <strong>your browser only</strong>. Every lead must paste it once in their own browser. After that, all data is read from and written to the same Sheet automatically — no one else needs to configure anything again.</p>
-    <div class="field">
-      <label>Apps Script Web App URL</label>
-      <input type="url" id="s-url" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;" />
-    </div>
-    <div class="flex gap-8 mt-2">
-      <button class="btn btn-primary" onclick="saveScriptUrl()">Save & Connect</button>
-      <button class="btn btn-teal" onclick="loadRemoteData();toast('Refreshing data from Sheet…')">🔄 Sync Now</button>
-      <button class="btn btn-ghost" onclick="clearScriptUrl()">Clear</button>
-    </div>
-    <div id="connection-status" style="margin-top:.75rem;font-size:13px;"></div>
+  <div class="page-header">
+    <h1>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007a74" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </h1>
+    <p>Configure your connection and personal preferences</p>
   </div>
 
-  <div class="card" style="margin-top:1rem">
-    <h2 style="font-size:14px;font-weight:700;margin-bottom:.25rem;color:var(--brand)">Your Lead Name</h2>
-    <p class="text-muted" style="margin-bottom:1rem;font-size:12px">Stored only in your browser. Pre-fills the Lead Name field when you start a new session.</p>
+  <div class="settings-card" style="border-color:var(--teal);border-width:2px">
+    <h2>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Google Sheets Connection
+    </h2>
+    <p class="text-muted" style="margin-bottom:1rem">Each lead pastes this URL once in their browser. All data then flows to and from the same Sheet — centralised and real-time.</p>
     <div class="field">
-      <input type="text" id="s-lead-name" placeholder="e.g. TP" />
+      <label>Apps Script Web App URL</label>
+      <input type="url" id="s-url" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%"/>
     </div>
+    <div class="flex gap-8 mt-2">
+      <button class="btn btn-teal" onclick="saveScriptUrl()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Save & Connect
+      </button>
+      <button class="btn btn-ghost" onclick="syncNow()">🔄 Sync Now</button>
+      <button class="btn btn-ghost" onclick="clearScriptUrl()">Clear</button>
+    </div>
+    <div id="connection-status" style="margin-top:.85rem;font-size:13px"></div>
+  </div>
+
+  <div class="settings-card">
+    <h2>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007a74" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Your Lead Name
+    </h2>
+    <p class="text-muted" style="margin-bottom:1rem">Stored in your browser only. Pre-fills the Lead Name field automatically.</p>
+    <div class="field"><input type="text" id="s-lead-name" placeholder="e.g. TP"/></div>
     <button class="btn btn-primary mt-2" onclick="saveLeadName()">Save Name</button>
   </div>
 </div>
 
-</main>
+<!-- ══════════════════════ SESSION TRACKER ══════════════════════ -->
+<div id="page-tracker" class="page">
+  <div class="page-header">
+    <h1>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007a74" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      Session Completion Tracker
+    </h1>
+    <p>Track which team members have completed their 1-on-1 across all leads</p>
+  </div>
 
+  <!-- Overall progress -->
+  <div class="tracker-progress anim-fade-up">
+    <div class="flex-between" style="margin-bottom:.5rem">
+      <span style="font-weight:700;font-size:14px;color:#007a74">Overall Team Completion</span>
+      <span style="font-weight:800;font-size:16px;color:#00B2A9" id="tracker-pct">0%</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="tracker-bar" style="width:0%"></div></div>
+    <div style="font-size:12px;color:var(--muted)" id="tracker-summary">Loading…</div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="flex gap-8" style="margin-bottom:1rem;flex-wrap:wrap">
+    <select id="tracker-lead-filter" onchange="renderTracker()" style="border:1.5px solid var(--border);border-radius:9px;padding:7px 13px;font-size:13px;outline:none;font-family:inherit;cursor:pointer;background:var(--surface)">
+      <option value="">All Leads</option>
+    </select>
+    <select id="tracker-status-filter" onchange="renderTracker()" style="border:1.5px solid var(--border);border-radius:9px;padding:7px 13px;font-size:13px;outline:none;font-family:inherit;cursor:pointer;background:var(--surface)">
+      <option value="">All Members</option>
+      <option value="done">✅ Session Done</option>
+      <option value="pending">⏳ Pending</option>
+    </select>
+  </div>
+
+  <div id="tracker-grid" class="tracker-grid"></div>
+</div>
+
+</main>
 <div id="toast"></div>
 
 <script>
-// ── Config ────────────────────────────────────────────────────
-// ⚠️  PASTE YOUR APPS SCRIPT URL HERE ONCE — all leads share this automatically
+// ── Config & State ────────────────────────────────────────────
 const SCRIPT_URL = localStorage.getItem('hitl_script_url') || '';
+let sessions=[], actions=[], leadName=localStorage.getItem('hitl_lead_name')||'';
+let goalRows=[], actionRows=[], selectedMood='', selectedRating=0, currentTab=0;
+let scriptUrl=SCRIPT_URL, currentViewSessionId=null;
 
-// ── State ─────────────────────────────────────────────────────
-let sessions     = [];   // always loaded from Sheet on boot
-let actions      = [];   // always loaded from Sheet on boot
-let leadName     = localStorage.getItem('hitl_lead_name') || '';
-let goalRows     = [];
-let actionRows   = [];
-let selectedMood   = '';
-let selectedRating = 0;
-let currentTab     = 0;
-let scriptUrl      = SCRIPT_URL;
+const RATING_LABELS={1:'Below Expectations',2:'Needs Development',3:'Consistently Meets Expectations',4:'Exceeds Expectations',5:'Sets New Standard'};
 
 // ── Boot ─────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  // Pre-fill lead name from local pref only (personal, not shared)
-  if (leadName) {
-    document.getElementById('f-lead').value = leadName;
-    document.getElementById('s-lead-name').value = leadName;
-  }
-  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
-
-  // Populate settings fields
-  if (scriptUrl) {
-    document.getElementById('s-url').value = scriptUrl;
-    document.getElementById('config-banner').classList.add('hidden');
-  }
-
-  addGoalRow();
-  addActionRow();
-
-  // Always load from Sheet — this is the single source of truth
+document.addEventListener('DOMContentLoaded',()=>{
+  if(leadName){document.getElementById('f-lead').value=leadName;document.getElementById('s-lead-name').value=leadName}
+  document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
+  if(scriptUrl){document.getElementById('s-url').value=scriptUrl;document.getElementById('config-banner').classList.add('hidden')}
+  addGoalRow();addActionRow();
   loadRemoteData();
 });
 
-// ── Navigation ───────────────────────────────────────────────
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  const btns = document.querySelectorAll('.nav-links button');
-  const map  = ['dashboard','form','actions','insights','settings','view'];
-  btns[map.indexOf(name)]?.classList.add('active');
-  if (name === 'dashboard') renderDashboard();
-  if (name === 'actions')   renderActions();
-  if (name === 'insights')  renderInsights();
+// ── Navigation ────────────────────────────────────────────────
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const map=['dashboard','form','tracker','actions','insights','settings','view'];
+  document.querySelectorAll('.nav-links button')[map.indexOf(name)]?.classList.add('active');
+  if(name==='dashboard') renderDashboard();
+  if(name==='actions')   renderActions();
+  if(name==='insights')  renderInsights();
+  if(name==='tracker')   renderTracker();
 }
-
-function switchTab(n) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-  document.querySelectorAll('.form-tab').forEach((b, i) => b.classList.toggle('active', i === n));
-  document.querySelector(`.tab-panel[data-tab="${n}"]`).classList.remove('hidden');
-  currentTab = n;
-}
-
-// ── Dashboard ────────────────────────────────────────────────
-function renderDashboard() {
-  const total    = sessions.length;
-  const avgRaw   = sessions.filter(s => s.current_rating).map(s => +s.current_rating);
-  const avg      = avgRaw.length ? (avgRaw.reduce((a,b)=>a+b,0)/avgRaw.length).toFixed(1) : '—';
-  const openActs = actions.filter(a => a.status !== 'Done').length;
-
-  document.getElementById('stat-total').textContent   = total;
-  document.getElementById('stat-done').textContent    = total;
-  document.getElementById('stat-avg').textContent     = avg;
-  document.getElementById('stat-actions').textContent = openActs;
-
-  const search  = (document.getElementById('search-members')?.value || '').toLowerCase();
-  const grid    = document.getElementById('members-grid');
-
-  const byMember = {};
-  sessions.forEach(s => {
-    if (!byMember[s.memberName]) byMember[s.memberName] = [];
-    byMember[s.memberName].push(s);
-  });
-
-  const members = Object.keys(byMember).filter(m => m.toLowerCase().includes(search));
-  if (!members.length) {
-    grid.innerHTML = `<div class="empty-state"><p>No sessions yet. Start your first 1-on-1.</p></div>`;
-    return;
-  }
-
-  grid.innerHTML = members.map(m => {
-    const all     = byMember[m];
-    const latest  = all[all.length - 1];
-    const rating  = latest.current_rating || 0;
-    const pct     = (rating / 5 * 100).toFixed(0);
-    const initials= m.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    const openA   = actions.filter(a => a.memberName === m && a.status !== 'Done').length;
-    return `
-      <div class="member-card">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between">
-          <div class="avatar">${initials}</div>
-          <button onclick="deleteSession('${latest.sessionId}')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-weight:600">Delete</button>
-        </div>
-        <div class="name" style="margin-top:8px;cursor:pointer" onclick="openMemberView('${latest.sessionId}')">${m}</div>
-        <div class="meta">${latest.leadName || ''} · ${latest.quarter || ''}</div>
-        <div class="rating-bar" style="margin-top:10px">
-          <div style="font-size:11px;color:var(--muted);width:40px">Rating</div>
-          <div class="track"><div class="fill" style="width:${pct}%"></div></div>
-          <div style="font-size:11px;font-weight:700;color:var(--brand);width:16px">${rating || '—'}</div>
-        </div>
-        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
-          <span class="badge badge-done">Session done</span>
-          ${openA ? `<span class="badge badge-pending">${openA} open actions</span>` : ''}
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function renderMemberCards() { renderDashboard(); }
-
-async function deleteSession(sessionId) {
-  if (!confirm('Delete this session from the view? Note: the record remains in Google Sheets for audit purposes.')) return;
-  // Remove from local view only — Sheet retains the record
-  sessions = sessions.filter(s => s.sessionId !== sessionId);
-  renderDashboard();
-  renderInsights();
-  toast('Session removed from view. Sheet record retained.');
-}
-
-function openMemberSession(name) {
-  resetForm();
-  document.getElementById('f-member').value = name;
-  onMemberInput();
-  showPage('form');
-}
-
-// ── View Session (read-only) ──────────────────────────────────
-let currentViewSessionId = null;
-
-function openMemberView(sessionId) {
-  const s = sessions.find(x => x.sessionId === sessionId);
-  if (!s) { toast('Session data not found'); return; }
-  currentViewSessionId = sessionId;
-  renderViewPage(s);
-  showPage('view');
-}
-
-const RATING_LABELS = {
-  1: 'Below Expectations',
-  2: 'Needs Development',
-  3: 'Consistently Meets Expectations',
-  4: 'Exceeds Expectations',
-  5: 'Sets New Standard'
-};
-
-function vField(label, value) {
-  const isEmpty = !value || value.trim() === '';
-  return `<div class="view-field">
-    <div class="vf-label">${label}</div>
-    <div class="vf-value ${isEmpty ? 'empty' : ''}">${isEmpty ? 'Not filled' : value}</div>
-  </div>`;
-}
-
-function renderViewPage(s) {
-  document.getElementById('view-title').textContent = `${s.memberName} — 1-on-1 Session`;
-  document.getElementById('view-meta').textContent  = `${s.quarter} · ${s.meetingDate} · Lead: ${s.leadName}`;
-
-  // Summary row
-  const ratingLabel = RATING_LABELS[s.current_rating] || '—';
-  document.getElementById('view-summary-row').innerHTML = `
-    <div class="view-summary-card">
-      <div class="vs-val">${s.current_rating || '—'}/5</div>
-      <div class="vs-lbl">Rating</div>
-      <div style="font-size:11px;color:var(--brand);font-weight:600;margin-top:4px">${ratingLabel}</div>
-    </div>
-    <div class="view-summary-card">
-      <div class="vs-val" style="font-size:16px">${s.mood || '—'}</div>
-      <div class="vs-lbl">Mood</div>
-    </div>
-    <div class="view-summary-card">
-      <div class="vs-val" style="font-size:15px">${s.goal_status || '—'}</div>
-      <div class="vs-lbl">Goal Status</div>
-    </div>
-    <div class="view-summary-card">
-      <div class="vs-val">${actions.filter(a => a.memberName === s.memberName && a.status !== 'Done' && a.status !== 'Deleted').length}</div>
-      <div class="vs-lbl">Open Actions</div>
-    </div>`;
-
-  // Positives
-  document.getElementById('view-positives').innerHTML =
-    vField('Efficiency',         s.positives_efficiency) +
-    vField('Quality',            s.positives_quality) +
-    vField('Leaves & Attendance',s.positives_leaves) +
-    vField('Breaks & Habits',    s.positives_breaks);
-
-  // Shortcomings
-  document.getElementById('view-shortcomings').innerHTML =
-    vField('Efficiency',         s.shortcomings_efficiency) +
-    vField('Quality',            s.shortcomings_quality) +
-    vField('Leaves & Attendance',s.shortcomings_leaves) +
-    vField('Breaks & Habits',    s.shortcomings_breaks);
-
-  // Team & Process
-  document.getElementById('view-team').innerHTML =
-    vField('Process Views',    s.process_views) +
-    vField('Operations Views', s.operations_views) +
-    vField('Team Dynamics',    s.team_views);
-
-  // Goals
-  const goals = (() => { try { return JSON.parse(s.goal_comments || '[]'); } catch(e) { return []; } })();
-  const pillClass = { 'On Track': 'pill-on-track', 'At Risk': 'pill-at-risk', 'Delayed': 'pill-delayed', 'Completed': 'pill-completed' };
-  document.getElementById('view-goals').innerHTML = goals.length
-    ? goals.map(g => `
-        <div class="goal-view-row">
-          <span>${g.goal || '—'}</span>
-          <span class="goal-status-pill ${pillClass[g.status] || ''}">${g.status || '—'}</span>
-        </div>`).join('')
-    : '<p class="text-muted">No goals recorded.</p>';
-
-  // Rating & Plans
-  document.getElementById('view-rating-plans').innerHTML = `
-    <div style="margin-bottom:1rem">
-      <div class="vf-label" style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Current Rating</div>
-      ${s.current_rating
-        ? `<div class="rating-view-pill"><span class="rv-num">${s.current_rating}</span>${ratingLabel}</div>`
-        : '<p class="text-muted" style="font-size:13px">Not rated</p>'}
-    </div>
-    ${vField('Personal Goals', s.personal_goals)}
-    ${vField('Support Needed', s.personal_support)}
-    ${vField('One Change to Improve More', s.one_change)}`;
-
-  // Overall Feedback
-  document.getElementById('view-overall').innerHTML = vField('Overall Feedback', s.overall_feedback);
-
-  // Action Items for this member
-  const memberActions = actions.filter(a =>
-    a.memberName === s.memberName && a.status !== 'Deleted'
-  );
-  document.getElementById('view-actions-list').innerHTML = memberActions.length
-    ? memberActions.map(a => `
-        <div class="action-item ${a.status === 'Done' ? 'done' : ''}" style="margin-bottom:8px">
-          <div class="desc">
-            <div style="font-weight:600;margin-bottom:2px">${a.description}</div>
-            <div style="font-size:11px;color:var(--muted)">${a.quarter || ''} · Due: ${a.dueDate || 'No date'}</div>
-          </div>
-          <span class="owner-tag">${a.owner || 'Lead'}</span>
-          <span class="due">${a.dueDate || ''}</span>
-          <select class="status-sel" onchange="updateActionStatus('${a.actionId}', this.value)">
-            <option ${a.status==='Open'?'selected':''}>Open</option>
-            <option ${a.status==='In Progress'?'selected':''}>In Progress</option>
-            <option ${a.status==='Done'?'selected':''}>Done</option>
-          </select>
-          <button class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px" onclick="deleteAction('${a.actionId}')">Delete</button>
-        </div>`).join('')
-    : '<p class="text-muted">No action items for this member.</p>';
-}
-
-function editCurrentSession() {
-  const s = sessions.find(x => x.sessionId === currentViewSessionId);
-  if (!s) return;
-  resetForm();
-
-  // Pre-fill all form fields with saved data
-  document.getElementById('f-lead').value    = s.leadName    || '';
-  document.getElementById('f-member').value  = s.memberName  || '';
-  document.getElementById('f-date').value    = s.meetingDate || '';
-  document.getElementById('f-quarter').value = s.quarter     || 'H1 2026';
-
-  document.getElementById('f-pos-eff').value   = s.positives_efficiency  || '';
-  document.getElementById('f-pos-qual').value  = s.positives_quality     || '';
-  document.getElementById('f-pos-leave').value = s.positives_leaves      || '';
-  document.getElementById('f-pos-break').value = s.positives_breaks      || '';
-
-  document.getElementById('f-sc-eff').value    = s.shortcomings_efficiency || '';
-  document.getElementById('f-sc-qual').value   = s.shortcomings_quality    || '';
-  document.getElementById('f-sc-leave').value  = s.shortcomings_leaves     || '';
-  document.getElementById('f-sc-break').value  = s.shortcomings_breaks     || '';
-
-  document.getElementById('f-process').value        = s.process_views    || '';
-  document.getElementById('f-ops').value             = s.operations_views || '';
-  document.getElementById('f-team').value            = s.team_views       || '';
-  document.getElementById('f-personal-goals').value = s.personal_goals   || '';
-  document.getElementById('f-personal-support').value = s.personal_support || '';
-  document.getElementById('f-one-change').value     = s.one_change        || '';
-  document.getElementById('f-overall').value        = s.overall_feedback  || '';
-
-  // Mood
-  if (s.mood) setMood(s.mood);
-
-  // Rating
-  if (s.current_rating) setRating(parseInt(s.current_rating));
-
-  // Goals
-  const goals = (() => { try { return JSON.parse(s.goal_comments || '[]'); } catch(e) { return []; } })();
-  document.getElementById('goals-list').innerHTML = '';
-  goalRows = [];
-  if (goals.length) {
-    goals.forEach(g => {
-      const id  = 'goal_' + Date.now() + Math.random();
-      goalRows.push(id);
-      const div = document.createElement('div');
-      div.className = 'goal-row'; div.id = id;
-      div.innerHTML = `
-        <textarea style="min-height:36px;height:36px">${g.goal || ''}</textarea>
-        <select>
-          <option value="">Status</option>
-          <option ${g.status==='On Track'?'selected':''}>On Track</option>
-          <option ${g.status==='At Risk'?'selected':''}>At Risk</option>
-          <option ${g.status==='Delayed'?'selected':''}>Delayed</option>
-          <option ${g.status==='Completed'?'selected':''}>Completed</option>
-        </select>
-        <button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeGoalRow('${id}')">✕</button>`;
-      document.getElementById('goals-list').appendChild(div);
-    });
-  } else {
-    addGoalRow();
-  }
-
-  onMemberInput(); // show history panel
-  showPage('form');
-  switchTab(0);
-}
-
-// ── Member History ────────────────────────────────────────────
-function onMemberInput() {
-  const name = document.getElementById('f-member').value.trim();
-  if (!name) { document.getElementById('history-panel').classList.add('hidden'); return; }
-
-  // Read from local sessions — always available, no async needed
-  const past  = sessions.filter(s => s.memberName && s.memberName.toLowerCase() === name.toLowerCase());
-  const panel = document.getElementById('history-panel');
-  if (!past.length) { panel.classList.add('hidden'); return; }
-
+function switchTab(n){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.add('hidden'));
+  document.querySelectorAll('.form-tab').forEach((b,i)=>b.classList.toggle('active',i===n));
+  const panel=document.querySelector(`.tab-panel[data-tab="${n}"]`);
   panel.classList.remove('hidden');
-  document.getElementById('history-member-name').textContent = name;
+  panel.style.animation='none';panel.offsetHeight;panel.style.animation='popIn .25s ease';
+  currentTab=n;
+}
 
-  const qColors = { 'H1 2026': 'q1', 'Q3 2026': 'q2', 'Q4 2026': 'q3', 'H1 2027': 'q1' };
-  document.getElementById('history-entries').innerHTML = past.slice(-3).reverse().map(s => {
-    const qc    = qColors[s.quarter] || 'q1';
-    const openA = actions.filter(a =>
-      a.memberName && a.memberName.toLowerCase() === name.toLowerCase() &&
-      a.status !== 'Done' &&
-      a.sessionId !== s.sessionId
-    );
-    const goals = (() => {
-      try { return JSON.parse(s.goal_comments || '[]'); } catch(e) { return []; }
-    })();
-    const goalSummary = goals.length
-      ? goals.map(g => `<span style="font-size:11px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:1px 6px;margin-right:4px">${g.goal?.slice(0,40) || ''}… <b>${g.status||''}</b></span>`).join('')
-      : '';
-    return `
-      <div class="history-entry ${qc}">
-        <div class="flex-between" style="margin-bottom:6px">
-          <span class="qbadge" style="font-weight:700;color:var(--brand)">${s.quarter}</span>
-          <span class="text-muted">${s.meetingDate || '—'} · Lead: ${s.leadName || '—'}</span>
-        </div>
-        <div style="font-size:13px;margin-bottom:6px;display:flex;gap:16px;flex-wrap:wrap">
-          <span><b>Rating:</b> ${s.current_rating || '—'}/5</span>
-          <span><b>Mood:</b> ${s.mood || '—'}</span>
-          <span><b>Goal Status:</b> ${s.goal_status || '—'}</span>
-        </div>
-        ${goalSummary ? `<div style="margin-bottom:6px">${goalSummary}</div>` : ''}
-        ${s.one_change ? `<div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 <b>One change requested:</b> ${s.one_change.slice(0,160)}${s.one_change.length>160?'…':''}</div>` : ''}
-        ${s.overall_feedback ? `<div style="font-size:12px;color:var(--muted)">📝 <b>Overall feedback:</b> ${s.overall_feedback.slice(0,160)}${s.overall_feedback.length>160?'…':''}</div>` : ''}
-        ${openA.length ? `<div style="margin-top:6px"><span class="badge badge-pending">${openA.length} open action${openA.length>1?'s':''} from this period</span></div>` : ''}
-      </div>`;
-  }).join('');
+// ── Dashboard ─────────────────────────────────────────────────
+function renderDashboard(){
+  const total=sessions.length;
+  const avgRaw=sessions.filter(s=>s.current_rating).map(s=>+s.current_rating);
+  const avg=avgRaw.length?(avgRaw.reduce((a,b)=>a+b,0)/avgRaw.length).toFixed(1):'—';
+  const openActs=actions.filter(a=>a.status!=='Done'&&a.status!=='Deleted').length;
+  document.getElementById('stat-total').textContent=total;
+  document.getElementById('stat-done').textContent=total;
+  document.getElementById('stat-avg').textContent=avg;
+  document.getElementById('stat-actions').textContent=openActs;
+
+  const search=(document.getElementById('search-members')?.value||'').toLowerCase();
+  const grid=document.getElementById('members-grid');
+  const byMember={};
+  sessions.forEach(s=>{if(!byMember[s.memberName])byMember[s.memberName]=[];byMember[s.memberName].push(s)});
+  const members=Object.keys(byMember).filter(m=>m.toLowerCase().includes(search));
+  if(!members.length){grid.innerHTML=`<div class="empty-state"><div class="es-icon">👥</div><p>No sessions yet. Start your first 1-on-1.</p></div>`;return}
+
+  grid.innerHTML=members.map((m,idx)=>{
+    const all=byMember[m],latest=all[all.length-1];
+    const rating=latest.current_rating||0,pct=(rating/5*100).toFixed(0);
+    const initials=m.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const openA=actions.filter(a=>a.memberName===m&&a.status!=='Done'&&a.status!=='Deleted').length;
+    const rl=RATING_LABELS[rating]||'';
+    return `<div class="member-card anim-fade-up" style="animation-delay:${idx*.05}s">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div class="mc-avatar">${initials}</div>
+        <button onclick="event.stopPropagation();deleteSession('${latest.sessionId}')" class="btn btn-danger btn-sm">🗑 Delete</button>
+      </div>
+      <div class="mc-name" onclick="openMemberView('${latest.sessionId}')">${m}</div>
+      <div class="mc-meta">${latest.leadName||''} · ${latest.quarter||''}</div>
+      ${rl?`<div style="font-size:11px;color:#007a74;font-weight:600;margin-top:4px">⭐ ${rl}</div>`:''}
+      <div class="rating-bar">
+        <div style="font-size:11px;color:var(--muted);width:40px">Rating</div>
+        <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+        <div style="font-size:11px;font-weight:800;color:#007a74;width:18px">${rating||'—'}</div>
+      </div>
+      <div style="margin-top:9px;display:flex;gap:6px;flex-wrap:wrap">
+        <span class="badge badge-done">✅ Session done</span>
+        ${openA?`<span class="badge badge-pending">🎯 ${openA} open action${openA>1?'s':''}</span>`:''}
+      </div>
+    </div>`}).join('');
+}
+function renderMemberCards(){renderDashboard()}
+async function deleteSession(sessionId){
+  if(!confirm('Remove this session from view? The record stays in Google Sheets for audit.'))return;
+  sessions=sessions.filter(s=>s.sessionId!==sessionId);
+  renderDashboard();renderInsights();
+  toast('Session removed from view');
+}
+
+// ── View Session ──────────────────────────────────────────────
+function openMemberView(sessionId){
+  const s=sessions.find(x=>x.sessionId===sessionId);
+  if(!s){toast('Session not found');return}
+  currentViewSessionId=sessionId;renderViewPage(s);showPage('view');
+}
+function vField(label,value,icon=''){
+  const isEmpty=!value||String(value).trim()==='';
+  return `<div class="view-field"><div class="vf-label">${icon?icon+' ':''} ${label}</div><div class="vf-value${isEmpty?' empty':''}">${isEmpty?'Not filled':value}</div></div>`;
+}
+function renderViewPage(s){
+  document.getElementById('view-title').textContent=`${s.memberName} — 1-on-1 Session`;
+  document.getElementById('view-meta').textContent=`${s.quarter} · ${s.meetingDate} · Lead: ${s.leadName}`;
+  const rl=RATING_LABELS[s.current_rating]||'—';
+  document.getElementById('view-summary-row').innerHTML=`
+    <div class="view-summary-card"><div class="vs-val">${s.current_rating||'—'}/5</div><div class="vs-lbl">Rating</div><div style="font-size:11px;color:#007a74;font-weight:600;margin-top:4px">${rl}</div></div>
+    <div class="view-summary-card"><div class="vs-val" style="font-size:18px">${s.mood||'—'}</div><div class="vs-lbl">Mood</div></div>
+    <div class="view-summary-card"><div class="vs-val" style="font-size:15px">${s.goal_status||'—'}</div><div class="vs-lbl">Goal Status</div></div>
+    <div class="view-summary-card"><div class="vs-val">${actions.filter(a=>a.memberName===s.memberName&&a.status!=='Done'&&a.status!=='Deleted').length}</div><div class="vs-lbl">Open Actions</div></div>`;
+
+  // Positives & Shortcomings — now single fields
+  document.getElementById('view-positives').innerHTML=vField('Things Worked Out Well',s.positives||s.positives_efficiency,'💚');
+  document.getElementById('view-shortcomings').innerHTML=vField('Things Need to Improve',s.shortcomings||s.shortcomings_efficiency,'⚠️');
+
+  document.getElementById('view-team').innerHTML=vField('Process Views',s.process_views,'⚙️')+vField('Operations Views',s.operations_views,'🏭')+vField('Team Dynamics',s.team_views,'🤝');
+
+  const goals=(()=>{try{return JSON.parse(s.goal_comments||'[]')}catch(e){return[]}})();
+  const pillClass={'On Track':'pill-on-track','At Risk':'pill-at-risk','Delayed':'pill-delayed','Completed':'pill-completed','Not Yet Started':'pill-not-started','Need Review':'pill-review'};
+  document.getElementById('view-goals').innerHTML=goals.length
+    ?goals.map(g=>`<div class="goal-view-row"><span>${g.goal||'—'}</span><span class="goal-status-pill ${pillClass[g.status]||''}">${g.status||'—'}</span></div>`).join('')
+    :'<p class="text-muted">No goals recorded.</p>';
+
+  document.getElementById('view-rating-plans').innerHTML=`
+    <div style="margin-bottom:1rem">
+      <div class="vf-label">⭐ Current Rating</div>
+      ${s.current_rating?`<div class="rating-view-pill"><span class="rv-num">${s.current_rating}</span>${rl}</div>`:'<p class="text-muted" style="font-size:13px">Not rated</p>'}
+    </div>
+    ${vField('Personal Goals',s.personal_goals,'🎯')}
+    ${vField('Support Needed',s.personal_support,'🤲')}
+    ${vField('One Change to Improve More',s.one_change,'💡')}`;
+
+  document.getElementById('view-overall').innerHTML=vField('Overall Feedback',s.overall_feedback,'📝');
+
+  const memberActions=actions.filter(a=>a.memberName===s.memberName&&a.status!=='Deleted');
+  document.getElementById('view-actions-list').innerHTML=memberActions.length
+    ?memberActions.map(a=>`
+      <div class="action-item ${a.status==='Done'?'done':''}" style="margin-bottom:8px">
+        <div class="desc"><div style="font-weight:600;margin-bottom:2px">${a.description}</div><div style="font-size:11px;color:var(--muted)">${a.quarter||''} · Due: ${a.dueDate||'No date'}</div></div>
+        <span class="owner-tag">${a.owner||'Lead'}</span>
+        <span class="due">${a.dueDate||''}</span>
+        <select class="status-sel" onchange="updateActionStatus('${a.actionId}',this.value)">
+          <option ${a.status==='Open'?'selected':''}>Open</option>
+          <option ${a.status==='In Progress'?'selected':''}>In Progress</option>
+          <option ${a.status==='Done'?'selected':''}>Done</option>
+        </select>
+        <button class="btn btn-danger btn-sm" onclick="deleteAction('${a.actionId}')">🗑</button>
+      </div>`).join('')
+    :'<p class="text-muted">No action items for this member.</p>';
+}
+
+function editCurrentSession(){
+  const s=sessions.find(x=>x.sessionId===currentViewSessionId);
+  if(!s)return;
+  resetForm();
+  document.getElementById('f-lead').value=s.leadName||'';
+  document.getElementById('f-member').value=s.memberName||'';
+  document.getElementById('f-date').value=s.meetingDate||'';
+  document.getElementById('f-quarter').value=s.quarter||'H1 2026';
+  // Single box positives/shortcomings — backwards compatible
+  document.getElementById('f-positives').value=s.positives||s.positives_efficiency||'';
+  document.getElementById('f-shortcomings').value=s.shortcomings||s.shortcomings_efficiency||'';
+  document.getElementById('f-process').value=s.process_views||'';
+  document.getElementById('f-ops').value=s.operations_views||'';
+  document.getElementById('f-team').value=s.team_views||'';
+  document.getElementById('f-personal-goals').value=s.personal_goals||'';
+  document.getElementById('f-personal-support').value=s.personal_support||'';
+  document.getElementById('f-one-change').value=s.one_change||'';
+  document.getElementById('f-overall').value=s.overall_feedback||'';
+  if(s.mood)setMood(s.mood);
+  if(s.current_rating)setRating(parseInt(s.current_rating));
+  const goals=(()=>{try{return JSON.parse(s.goal_comments||'[]')}catch(e){return[]}})();
+  document.getElementById('goals-list').innerHTML='';goalRows=[];
+  if(goals.length){goals.forEach(g=>{const id='goal_'+Date.now()+Math.random();goalRows.push(id);const div=document.createElement('div');div.className='goal-row';div.id=id;div.innerHTML=`<textarea style="min-height:36px;height:36px">${g.goal||''}</textarea><select><option value="">Status</option><option ${g.status==='On Track'?'selected':''}>On Track</option><option ${g.status==='Completed'?'selected':''}>Completed</option><option ${g.status==='Not Yet Started'?'selected':''}>Not Yet Started</option><option ${g.status==='Delayed'?'selected':''}>Delayed</option><option ${g.status==='At Risk'?'selected':''}>At Risk</option><option ${g.status==='Need Review'?'selected':''}>Need Review</option></select><button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeGoalRow('${id}')">✕</button>`;document.getElementById('goals-list').appendChild(div)})}
+  else addGoalRow();
+  onMemberInput();showPage('form');switchTab(0);
 }
 
 // ── Mood & Rating ─────────────────────────────────────────────
-function setMood(m) {
-  selectedMood = m;
-  document.querySelectorAll('.mood-btn').forEach(b => {
-    b.classList.toggle('on', b.getAttribute('data-mood') === m);
-  });
-}
-function setRating(n) {
-  selectedRating = n;
-  document.getElementById('f-rating').value = n;
-  document.querySelectorAll('.rating-label-btn').forEach(b => {
-    b.classList.toggle('on', parseInt(b.getAttribute('data-value')) === n);
-  });
-}
+function setMood(m){selectedMood=m;document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('on',b.getAttribute('data-mood')===m))}
+function setRating(n){selectedRating=n;document.getElementById('f-rating').value=n;document.querySelectorAll('.rating-label-btn').forEach(b=>b.classList.toggle('on',parseInt(b.getAttribute('data-value'))===n))}
 
-// ── Goal Rows ─────────────────────────────────────────────────
-function addGoalRow() {
-  const id  = 'goal_' + Date.now();
-  goalRows.push(id);
-  const div = document.createElement('div');
-  div.className = 'goal-row';
-  div.id = id;
-  div.innerHTML = `
-    <textarea placeholder="GPS goal description..." style="min-height:36px;height:36px"></textarea>
-    <select>
-      <option value="">Status</option>
-      <option>On Track</option>
-      <option>At Risk</option>
-      <option>Delayed</option>
-      <option>Completed</option>
-    </select>
-    <button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeGoalRow('${id}')">✕</button>`;
+// ── Goals ─────────────────────────────────────────────────────
+function addGoalRow(){
+  const id='goal_'+Date.now();goalRows.push(id);
+  const div=document.createElement('div');div.className='goal-row';div.id=id;
+  div.innerHTML=`<textarea placeholder="GPS goal description…" style="min-height:36px;height:36px"></textarea><select><option value="">Status</option><option>On Track</option><option>Completed</option><option>Not Yet Started</option><option>Delayed</option><option>At Risk</option><option>Need Review</option></select><button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeGoalRow('${id}')">✕</button>`;
   document.getElementById('goals-list').appendChild(div);
 }
-function removeGoalRow(id) {
-  document.getElementById(id)?.remove();
-  goalRows = goalRows.filter(r => r !== id);
-}
-function collectGoals() {
-  const rows = document.querySelectorAll('.goal-row');
-  return Array.from(rows).map(r => ({
-    goal: r.querySelector('textarea').value,
-    status: r.querySelector('select').value
-  })).filter(g => g.goal);
-}
+function removeGoalRow(id){document.getElementById(id)?.remove();goalRows=goalRows.filter(r=>r!==id)}
+function collectGoals(){return Array.from(document.querySelectorAll('.goal-row')).map(r=>({goal:r.querySelector('textarea').value,status:r.querySelector('select').value})).filter(g=>g.goal)}
 
-// ── Action Rows (in form) ─────────────────────────────────────
-function addActionRow() {
-  const id  = 'arow_' + Date.now();
-  actionRows.push(id);
-  const div = document.createElement('div');
-  div.className = 'action-item';
-  div.id = id;
-  div.style = 'grid-template-columns:1fr auto auto auto auto';
-  div.innerHTML = `
-    <input type="text" placeholder="Action item description..." style="border:none;background:transparent;font-size:13px;outline:none;width:100%" />
-    <select style="border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:12px;background:#fff">
-      <option>Lead</option><option>Member</option><option>Both</option>
-    </select>
-    <input type="date" style="border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:12px;width:120px" />
-    <select class="status-sel" style="border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:12px;background:#fff">
-      <option>Open</option><option>In Progress</option><option>Done</option>
-    </select>
-    <button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeActionRow('${id}')">✕</button>`;
+// ── Action Rows ───────────────────────────────────────────────
+function addActionRow(){
+  const id='arow_'+Date.now();actionRows.push(id);
+  const div=document.createElement('div');div.className='action-item';div.id=id;
+  div.style='grid-template-columns:1fr auto auto auto auto';
+  div.innerHTML=`<input type="text" placeholder="Action item description…" style="border:none;background:transparent;font-size:13px;outline:none;width:100%;font-family:inherit"/><select style="border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:12px;background:#fff;font-family:inherit;outline:none;cursor:pointer"><option>Lead</option><option>Member</option><option>Both</option></select><input type="date" style="border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:12px;width:130px"/><select class="status-sel" style="border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:12px;background:#fff;font-family:inherit;outline:none;cursor:pointer"><option>Open</option><option>In Progress</option><option>Done</option></select><button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeActionRow('${id}')">✕</button>`;
   document.getElementById('new-action-list').appendChild(div);
 }
-function removeActionRow(id) {
-  document.getElementById(id)?.remove();
-  actionRows = actionRows.filter(r => r !== id);
-}
-function collectNewActions(sessionId, memberName, leadName, quarter, meetingDate) {
-  const rows = document.querySelectorAll('#new-action-list .action-item');
-  return Array.from(rows).map(r => {
-    const inputs = r.querySelectorAll('input,select');
-    return {
-      actionId:    'A_' + Date.now() + Math.random(),
-      sessionId,
-      memberName,
-      leadName,
-      quarter,
-      meetingDate,
-      description: inputs[0].value,
-      owner:       inputs[1].value,
-      dueDate:     inputs[2].value,
-      status:      inputs[3].value,
-      createdAt:   new Date().toISOString()
-    };
-  }).filter(a => a.description);
+function removeActionRow(id){document.getElementById(id)?.remove();actionRows=actionRows.filter(r=>r!==id)}
+function collectNewActions(sid,memberName,ln,quarter,meetingDate){
+  return Array.from(document.querySelectorAll('#new-action-list .action-item')).map(r=>{
+    const inputs=r.querySelectorAll('input,select');
+    return{actionId:'A_'+Date.now()+Math.random(),sessionId:sid,memberName,leadName:ln,quarter,meetingDate,description:inputs[0].value,owner:inputs[1].value,dueDate:inputs[2].value,status:inputs[3].value,createdAt:new Date().toISOString()}
+  }).filter(a=>a.description);
 }
 
 // ── Submit Session ────────────────────────────────────────────
-async function submitSession() {
-  const lead   = document.getElementById('f-lead').value.trim();
-  const member = document.getElementById('f-member').value.trim();
-  if (!lead || !member) { toast('Please fill Lead and Member names.'); switchTab(0); return; }
-
-  const goals   = collectGoals();
-  const sid     = 'S_' + Date.now();
-  const quarter = document.getElementById('f-quarter').value;
-  const date    = document.getElementById('f-date').value;
-
-  const payload = {
-    sessionId:               sid,
-    quarter,
-    leadName:                lead,
-    memberName:              member,
-    meetingDate:             date,
-    mood:                    selectedMood,
-    positives_efficiency:    document.getElementById('f-pos-eff').value,
-    positives_quality:       document.getElementById('f-pos-qual').value,
-    positives_leaves:        document.getElementById('f-pos-leave').value,
-    positives_breaks:        document.getElementById('f-pos-break').value,
-    shortcomings_efficiency: document.getElementById('f-sc-eff').value,
-    shortcomings_quality:    document.getElementById('f-sc-qual').value,
-    shortcomings_leaves:     document.getElementById('f-sc-leave').value,
-    shortcomings_breaks:     document.getElementById('f-sc-break').value,
-    process_views:           document.getElementById('f-process').value,
-    operations_views:        document.getElementById('f-ops').value,
-    team_views:              document.getElementById('f-team').value,
-    goal_status:             goals.map(g=>g.status).join(', '),
-    goal_comments:           JSON.stringify(goals),
-    current_rating:          selectedRating,
-    personal_goals:          document.getElementById('f-personal-goals').value,
-    personal_support:        document.getElementById('f-personal-support').value,
-    one_change:              document.getElementById('f-one-change').value,
-    overall_feedback:        document.getElementById('f-overall').value,
-    timestamp:               new Date().toISOString()
+async function submitSession(){
+  const lead=document.getElementById('f-lead').value.trim();
+  const member=document.getElementById('f-member').value.trim();
+  if(!lead||!member){toast('⚠️ Please fill Lead and Member names.');switchTab(0);return}
+  const goals=collectGoals();
+  const sid='S_'+Date.now();
+  const quarter=document.getElementById('f-quarter').value;
+  const date=document.getElementById('f-date').value;
+  const payload={
+    sessionId:sid,quarter,leadName:lead,memberName:member,meetingDate:date,mood:selectedMood,
+    positives:document.getElementById('f-positives').value,
+    shortcomings:document.getElementById('f-shortcomings').value,
+    // keep legacy fields mapped for backwards compatibility in view
+    positives_efficiency:document.getElementById('f-positives').value,
+    shortcomings_efficiency:document.getElementById('f-shortcomings').value,
+    process_views:document.getElementById('f-process').value,
+    operations_views:document.getElementById('f-ops').value,
+    team_views:document.getElementById('f-team').value,
+    goal_status:goals.map(g=>g.status).join(', '),
+    goal_comments:JSON.stringify(goals),
+    current_rating:selectedRating,
+    personal_goals:document.getElementById('f-personal-goals').value,
+    personal_support:document.getElementById('f-personal-support').value,
+    one_change:document.getElementById('f-one-change').value,
+    overall_feedback:document.getElementById('f-overall').value,
+    timestamp:new Date().toISOString()
   };
-
-  const newActs = collectNewActions(sid, member, lead, quarter, date);
-
-  // Sheet is the single source of truth — no localStorage writes
-  if (!scriptUrl) {
-    toast('⚠️ No Sheet URL configured. Go to Settings first.');
-    return;
-  }
-
-  toast('Saving to Google Sheets… ⏳');
-  try {
-    const r1 = await api('saveSession', payload);
-    if (!r1.ok) throw new Error(r1.error || 'Save failed');
-    for (const a of newActs) await api('saveAction', a);
-    toast('Saved & synced ✅ — all leads can see this now');
-    const wasEditing = currentViewSessionId;
+  const newActs=collectNewActions(sid,member,lead,quarter,date);
+  if(!scriptUrl){toast('⚠️ No Sheet URL configured. Go to Settings first.');return}
+  toast('⏳ Saving to Google Sheets…');
+  try{
+    const r1=await api('saveSession',payload);
+    if(!r1.ok)throw new Error(r1.error||'Save failed');
+    for(const a of newActs)await api('saveAction',a);
+    toast('✅ Saved & synced — all leads can see this now');
+    const wasEditing=currentViewSessionId;
     resetForm();
     await loadRemoteData();
-    if (wasEditing) {
-      // Refresh view page with updated data
-      const updated = sessions.find(x => x.sessionId === wasEditing);
-      if (updated) { currentViewSessionId = wasEditing; renderViewPage(updated); showPage('view'); }
-      else showPage('dashboard');
-    } else {
-      showPage('dashboard');
-    }
-  } catch(e) {
-    console.error('Sheet sync failed:', e);
-    toast('❌ Sync failed: ' + e.message + ' — check Settings');
-  }
+    if(wasEditing){const updated=sessions.find(x=>x.sessionId===wasEditing);if(updated){currentViewSessionId=wasEditing;renderViewPage(updated);showPage('view')}else showPage('dashboard')}
+    else showPage('dashboard');
+  }catch(e){console.error(e);toast('❌ Sync failed: '+e.message)}
 }
 
-// ── Actions Page ──────────────────────────────────────────────
-function renderActions() {
-  const statusF = document.getElementById('action-filter-status')?.value || '';
-  const memberF = document.getElementById('action-filter-member')?.value || '';
-
-  // Populate member filter
-  const members = [...new Set(actions.map(a => a.memberName))];
-  const sel = document.getElementById('action-filter-member');
-  if (sel) {
-    const cur = sel.value;
-    sel.innerHTML = '<option value="">All Members</option>' + members.map(m => `<option ${m===cur?'selected':''}>${m}</option>`).join('');
-  }
-
-  let filtered = actions.filter(a => a.status !== 'Deleted');
-  if (statusF) filtered = filtered.filter(a => a.status === statusF);
-  if (memberF) filtered = filtered.filter(a => a.memberName === memberF);
-
-  if (!filtered.length) {
-    document.getElementById('actions-list').innerHTML = '<div class="empty-state"><p>No action items found.</p></div>';
-    return;
-  }
-
-  document.getElementById('actions-list').innerHTML = filtered.map((a,idx) => `
-    <div class="action-item ${a.status==='Done'?'done':''}" id="act_${idx}">
-      <div class="desc">
-        <div style="font-weight:600;margin-bottom:2px">${a.description}</div>
-        <div style="font-size:11px;color:var(--muted)">${a.memberName} · ${a.quarter || ''} · ${a.meetingDate || ''}</div>
+// ── History panel ─────────────────────────────────────────────
+function onMemberInput(){
+  const name=document.getElementById('f-member').value.trim();
+  if(!name){document.getElementById('history-panel').classList.add('hidden');return}
+  const past=sessions.filter(s=>s.memberName&&s.memberName.toLowerCase()===name.toLowerCase());
+  const panel=document.getElementById('history-panel');
+  if(!past.length){panel.classList.add('hidden');return}
+  panel.classList.remove('hidden');
+  document.getElementById('history-member-name').textContent=name;
+  const qColors={'H1 2026':'q1','Q3 2026':'q2','Q4 2026':'q3','H1 2027':'q4'};
+  document.getElementById('history-entries').innerHTML=past.slice(-3).reverse().map(s=>{
+    const qc=qColors[s.quarter]||'q1';
+    const openA=actions.filter(a=>a.memberName&&a.memberName.toLowerCase()===name.toLowerCase()&&a.status!=='Done'&&a.sessionId!==s.sessionId);
+    const goals=(()=>{try{return JSON.parse(s.goal_comments||'[]')}catch(e){return[]}})();
+    return `<div class="history-entry ${qc}">
+      <div class="flex-between" style="margin-bottom:6px"><span style="font-weight:700;color:#007a74">${s.quarter}</span><span class="text-muted">${s.meetingDate||'—'} · Lead: ${s.leadName||'—'}</span></div>
+      <div style="font-size:13px;margin-bottom:6px;display:flex;gap:16px;flex-wrap:wrap">
+        <span><b>Rating:</b> ${s.current_rating||'—'}/5 ${s.current_rating?'('+RATING_LABELS[s.current_rating]+')':''}</span>
+        <span><b>Mood:</b> ${s.mood||'—'}</span>
       </div>
-      <span class="owner-tag">${a.owner || 'Lead'}</span>
-      <span class="due">${a.dueDate || 'No due date'}</span>
-      <select class="status-sel" onchange="updateActionStatus('${a.actionId}', this.value)">
+      ${s.one_change?`<div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 <b>One change:</b> ${s.one_change.slice(0,160)}${s.one_change.length>160?'…':''}</div>`:''}
+      ${s.overall_feedback?`<div style="font-size:12px;color:var(--muted)">📝 <b>Feedback:</b> ${s.overall_feedback.slice(0,160)}${s.overall_feedback.length>160?'…':''}</div>`:''}
+      ${openA.length?`<div style="margin-top:6px"><span class="badge badge-pending">🎯 ${openA.length} open action${openA.length>1?'s':''} from this period</span></div>`:''}
+    </div>`}).join('');
+}
+
+// ── Actions page ──────────────────────────────────────────────
+function renderActions(){
+  const statusF=document.getElementById('action-filter-status')?.value||'';
+  const memberF=document.getElementById('action-filter-member')?.value||'';
+  const members=[...new Set(actions.map(a=>a.memberName))];
+  const sel=document.getElementById('action-filter-member');
+  if(sel){const cur=sel.value;sel.innerHTML='<option value="">All Members</option>'+members.map(m=>`<option ${m===cur?'selected':''}>${m}</option>`).join('')}
+  let filtered=actions.filter(a=>a.status!=='Deleted');
+  if(statusF)filtered=filtered.filter(a=>a.status===statusF);
+  if(memberF)filtered=filtered.filter(a=>a.memberName===memberF);
+  if(!filtered.length){document.getElementById('actions-list').innerHTML='<div class="empty-state"><div class="es-icon">🎯</div><p>No action items found.</p></div>';return}
+  document.getElementById('actions-list').innerHTML=filtered.map(a=>`
+    <div class="action-item ${a.status==='Done'?'done':''}" style="margin-bottom:8px;animation:slideIn .2s ease">
+      <div class="desc"><div style="font-weight:600;margin-bottom:2px">${a.description}</div><div style="font-size:11px;color:var(--muted)">${a.memberName} · ${a.quarter||''} · ${a.meetingDate||''}</div></div>
+      <span class="owner-tag">${a.owner||'Lead'}</span>
+      <span class="due">${a.dueDate||'No date'}</span>
+      <select class="status-sel" onchange="updateActionStatus('${a.actionId}',this.value)">
         <option ${a.status==='Open'?'selected':''}>Open</option>
         <option ${a.status==='In Progress'?'selected':''}>In Progress</option>
         <option ${a.status==='Done'?'selected':''}>Done</option>
       </select>
-      <button class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px" onclick="deleteAction('${a.actionId}')">Delete</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteAction('${a.actionId}')">🗑</button>
     </div>`).join('');
 }
-
-async function updateActionStatus(actionId, status) {
-  if (!scriptUrl) { toast('⚠️ No Sheet URL configured.'); return; }
-  try {
-    await api('updateAction', { actionId, status });
-    toast('Action updated ✅');
-    await loadRemoteData();
-  } catch(e) {
-    toast('❌ Update failed — check Settings');
-  }
+async function updateActionStatus(actionId,status){
+  if(!scriptUrl){toast('⚠️ No Sheet URL configured.');return}
+  try{await api('updateAction',{actionId,status});toast('✅ Action updated');await loadRemoteData()}
+  catch(e){toast('❌ Update failed')}
 }
-
-async function deleteAction(actionId) {
-  if (!confirm('Delete this action item? This cannot be undone.')) return;
-  // Mark as Deleted in Sheet (Apps Script GET can't physically delete rows safely)
-  try {
-    await api('updateAction', { actionId, status: 'Deleted' });
-    toast('Action deleted ✅');
-    await loadRemoteData();
-  } catch(e) {
-    toast('❌ Delete failed');
-  }
+async function deleteAction(actionId){
+  if(!confirm('Delete this action item?'))return;
+  try{await api('updateAction',{actionId,status:'Deleted'});toast('🗑 Action deleted');await loadRemoteData()}
+  catch(e){toast('❌ Delete failed')}
 }
 
 // ── Insights ──────────────────────────────────────────────────
-function renderInsights() {
-  renderRatingDist();
-  renderMoodDist();
-  renderThemes();
-  renderActionHealth();
+function insightsSessions(){
+  const f=document.getElementById('insights-lead-filter')?.value||'';
+  // Populate dropdown
+  const sel=document.getElementById('insights-lead-filter');
+  if(sel){
+    const leads=[...new Set(sessions.map(s=>s.leadName).filter(Boolean))];
+    const cur=sel.value;
+    sel.innerHTML='<option value="">All Leads</option>'+leads.map(l=>`<option ${l===cur?'selected':''}>${l}</option>`).join('');
+  }
+  return f?sessions.filter(s=>s.leadName===f):sessions;
 }
 
-function renderRatingDist() {
-  const counts = {1:0,2:0,3:0,4:0,5:0};
-  sessions.forEach(s => { if (s.current_rating) counts[s.current_rating]++; });
-  const max = Math.max(...Object.values(counts), 1);
-  document.getElementById('rating-dist').innerHTML = Object.entries(counts).map(([r,c]) => `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-      <div style="width:20px;font-size:12px;font-weight:600;color:var(--brand)">${r}</div>
-      <div style="flex:1;height:20px;background:var(--border);border-radius:4px;overflow:hidden">
-        <div style="height:100%;width:${c/max*100}%;background:var(--brand);border-radius:4px;transition:width .4s"></div>
+function renderInsights(){
+  const ss=insightsSessions();
+  renderRatingDist(ss);
+  renderMoodDist(ss);
+  renderThemes(ss);
+  renderActionHealth(ss);
+}
+
+function renderRatingDist(ss){
+  const counts={1:0,2:0,3:0,4:0,5:0};
+  ss.forEach(s=>{if(s.current_rating)counts[s.current_rating]++});
+  const max=Math.max(...Object.values(counts),1);
+  document.getElementById('rating-dist').innerHTML=Object.entries(counts).map(([r,c])=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:28px;font-size:12px;font-weight:700;color:#007a74">${r}</div>
+      <div style="flex:1;height:22px;background:var(--border);border-radius:5px;overflow:hidden">
+        <div style="height:100%;width:${c/max*100}%;background:linear-gradient(90deg,var(--brand),var(--teal));border-radius:5px;transition:width .5s ease"></div>
       </div>
       <div style="width:20px;font-size:12px;color:var(--muted)">${c}</div>
+      <div style="font-size:11px;color:var(--muted);width:200px">${RATING_LABELS[r]||''}</div>
     </div>`).join('');
 }
 
-function renderMoodDist() {
-  const counts = {};
-  sessions.forEach(s => { if (s.mood) counts[s.mood] = (counts[s.mood]||0)+1; });
-  if (!Object.keys(counts).length) {
-    document.getElementById('mood-dist').innerHTML = '<p class="text-muted">No mood data yet.</p>';
-    return;
-  }
-  const moodColors = { 'Very Positive': 'var(--teal)', 'Positive': '#16a34a', 'Neutral': 'var(--amber)', 'Concerned': '#ea580c', 'Disengaged': 'var(--accent)' };
-  document.getElementById('mood-dist').innerHTML = Object.entries(counts).map(([m,c]) => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
-      <span style="color:${moodColors[m]||'var(--text)'};font-weight:600">${m}</span>
+function renderMoodDist(ss){
+  const counts={};ss.forEach(s=>{if(s.mood)counts[s.mood]=(counts[s.mood]||0)+1});
+  if(!Object.keys(counts).length){document.getElementById('mood-dist').innerHTML='<p class="text-muted">No mood data yet.</p>';return}
+  const mc={'Very Positive':'var(--teal)','Positive':'#16a34a','Neutral':'var(--amber)','Concerned':'#ea580c','Disengaged':'var(--accent)'};
+  document.getElementById('mood-dist').innerHTML=Object.entries(counts).map(([m,c])=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span style="color:${mc[m]||'var(--text)'};font-weight:600">${m}</span>
       <span class="badge" style="background:var(--bg)">${c} member${c>1?'s':''}</span>
     </div>`).join('');
 }
 
-function renderThemes() {
-  const changes = sessions.map(s => s.one_change).filter(Boolean);
-  if (!changes.length) { document.getElementById('themes-list').innerHTML = '<div class="empty-state"><p>Complete more sessions to see themes.</p></div>'; return; }
-  const keywords = ['process','tool','training','communication','feedback','schedule','workflow','clarity','support','workload'];
-  const found = keywords.map(k => ({
-    k,
-    count: changes.filter(c => c.toLowerCase().includes(k)).length
-  })).filter(x => x.count).sort((a,b)=>b.count-a.count);
-
-  if (!found.length) { document.getElementById('themes-list').innerHTML = '<p class="text-muted">No common themes found yet. Add more sessions.</p>'; return; }
-  document.getElementById('themes-list').innerHTML = found.map(({k,count}) => `
-    <div class="insight-row">
-      <span class="theme-tag">${k}</span>
-      <span style="font-size:13px;color:var(--muted)">${count} member${count>1?'s':''} mentioned</span>
-    </div>`).join('');
+function renderThemes(ss){
+  const changes=ss.map(s=>s.one_change).filter(Boolean);
+  if(!changes.length){document.getElementById('themes-list').innerHTML='<div class="empty-state"><p>Complete more sessions to see themes.</p></div>';return}
+  const keywords=['process','tool','training','communication','feedback','schedule','workflow','clarity','support','workload','recognition','collaboration'];
+  const found=keywords.map(k=>({k,count:changes.filter(c=>c.toLowerCase().includes(k)).length})).filter(x=>x.count).sort((a,b)=>b.count-a.count);
+  if(!found.length){document.getElementById('themes-list').innerHTML='<p class="text-muted">No common themes found yet.</p>';return}
+  document.getElementById('themes-list').innerHTML=found.map(({k,count})=>`
+    <div class="insight-row"><span class="theme-tag">${k}</span><span style="font-size:13px;color:var(--muted)">${count} member${count>1?'s':''} mentioned</span></div>`).join('');
 }
 
-function renderActionHealth() {
-  const open = actions.filter(a => a.status === 'Open').length;
-  const inpr = actions.filter(a => a.status === 'In Progress').length;
-  const done = actions.filter(a => a.status === 'Done').length;
-  const total = actions.length || 1;
-  document.getElementById('action-health').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;text-align:center">
-      <div><div style="font-size:28px;font-weight:700;color:var(--accent)">${open}</div><div class="text-muted">Open</div></div>
-      <div><div style="font-size:28px;font-weight:700;color:var(--amber)">${inpr}</div><div class="text-muted">In Progress</div></div>
-      <div><div style="font-size:28px;font-weight:700;color:var(--teal)">${done}</div><div class="text-muted">Done</div></div>
+function renderActionHealth(ss){
+  const leadFilter=document.getElementById('insights-lead-filter')?.value||'';
+  let filtActions=actions.filter(a=>a.status!=='Deleted');
+  if(leadFilter)filtActions=filtActions.filter(a=>a.leadName===leadFilter);
+  const open=filtActions.filter(a=>a.status==='Open').length;
+  const inpr=filtActions.filter(a=>a.status==='In Progress').length;
+  const done=filtActions.filter(a=>a.status==='Done').length;
+  const total=filtActions.length||1;
+  document.getElementById('action-health').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;text-align:center;margin-bottom:1rem">
+      <div style="background:#fee2e2;border-radius:12px;padding:1rem"><div style="font-size:28px;font-weight:800;color:#dc2626">${open}</div><div class="text-muted">Open</div></div>
+      <div style="background:var(--amber-soft);border-radius:12px;padding:1rem"><div style="font-size:28px;font-weight:800;color:var(--amber)">${inpr}</div><div class="text-muted">In Progress</div></div>
+      <div style="background:var(--teal-soft);border-radius:12px;padding:1rem"><div style="font-size:28px;font-weight:800;color:var(--teal)">${done}</div><div class="text-muted">Done</div></div>
     </div>
-    <div style="margin-top:1rem;height:10px;border-radius:5px;background:var(--border);overflow:hidden;display:flex">
-      <div style="width:${(done/total*100).toFixed(0)}%;background:var(--teal);transition:width .4s"></div>
-      <div style="width:${(inpr/total*100).toFixed(0)}%;background:var(--amber);transition:width .4s"></div>
-      <div style="width:${(open/total*100).toFixed(0)}%;background:var(--accent);transition:width .4s"></div>
+    <div style="height:12px;border-radius:6px;background:var(--border);overflow:hidden;display:flex">
+      <div style="width:${(done/total*100).toFixed(0)}%;background:var(--teal);transition:width .5s ease"></div>
+      <div style="width:${(inpr/total*100).toFixed(0)}%;background:var(--amber);transition:width .5s ease"></div>
+      <div style="width:${(open/total*100).toFixed(0)}%;background:var(--accent);transition:width .5s ease"></div>
     </div>
-    <div style="display:flex;gap:1rem;margin-top:.5rem;font-size:11px;color:var(--muted)">
+    <div style="display:flex;gap:1.5rem;margin-top:.6rem;font-size:11px;color:var(--muted)">
       <span>🟢 Done ${(done/total*100).toFixed(0)}%</span>
       <span>🟡 In Progress ${(inpr/total*100).toFixed(0)}%</span>
       <span>🔴 Open ${(open/total*100).toFixed(0)}%</span>
@@ -1218,111 +1114,217 @@ function renderActionHealth() {
 }
 
 // ── Settings ──────────────────────────────────────────────────
-async function saveScriptUrl() {
-  const url = document.getElementById('s-url').value.trim();
-  if (!url) { toast('Please enter the Apps Script URL'); return; }
-  scriptUrl = url;
-  localStorage.setItem('hitl_script_url', url);
+async function saveScriptUrl(){
+  const url=document.getElementById('s-url').value.trim();
+  if(!url){toast('Please enter the Apps Script URL');return}
+  scriptUrl=url;localStorage.setItem('hitl_script_url',url);
   document.getElementById('config-banner').classList.add('hidden');
-
-  const el = document.getElementById('connection-status');
-  el.innerHTML = '<span style="color:var(--amber)">⏳ Connecting…</span>';
-  try {
-    const res = await fetch(url + '?action=ping&_=' + Date.now());
-    const d   = await res.json();
-    if (d.ok) {
-      el.innerHTML = '<span style="color:var(--teal);font-weight:600">✅ Connected! Loading shared data…</span>';
+  const el=document.getElementById('connection-status');
+  el.innerHTML='<span style="color:var(--amber)">⏳ Connecting…</span>';
+  try{
+    const res=await fetch(url+'?action=ping&_='+Date.now());
+    const d=await res.json();
+    if(d.ok){
+      el.innerHTML='<span style="color:var(--teal);font-weight:600">✅ Connected! Loading shared data…</span>';
       await loadRemoteData();
-      el.innerHTML = '<span style="color:var(--teal);font-weight:600">✅ Connected & synced. All leads share this data automatically.</span>';
-    } else {
-      el.innerHTML = `<span style="color:var(--accent)">⚠️ Reached but got error: ${d.error}</span>`;
-    }
-  } catch(e) {
-    el.innerHTML = `<span style="color:var(--accent)">❌ Could not reach URL. Make sure it ends in /exec and "Anyone" has access.</span>`;
-  }
+      el.innerHTML='<span style="color:var(--teal);font-weight:600">✅ Connected & synced. All leads share this data.</span>';
+    }else{el.innerHTML=`<span style="color:var(--accent)">⚠️ Error: ${d.error}</span>`}
+  }catch(e){el.innerHTML=`<span style="color:var(--accent)">❌ Could not reach URL. Check it ends in /exec and has "Anyone" access.</span>`}
 }
-
-function clearScriptUrl() {
-  scriptUrl = '';
-  localStorage.removeItem('hitl_script_url');
-  document.getElementById('s-url').value = '';
-  document.getElementById('connection-status').textContent = '';
+function clearScriptUrl(){
+  scriptUrl='';localStorage.removeItem('hitl_script_url');
+  document.getElementById('s-url').value='';document.getElementById('connection-status').textContent='';
   document.getElementById('config-banner').classList.remove('hidden');
-  sessions = []; actions = [];
-  renderDashboard(); renderActions(); renderInsights();
-  toast('Sheet URL cleared');
+  sessions=[];actions=[];renderDashboard();renderActions();renderInsights();toast('Sheet URL cleared');
+}
+function saveLeadName(){
+  leadName=document.getElementById('s-lead-name').value.trim();
+  localStorage.setItem('hitl_lead_name',leadName);
+  document.getElementById('f-lead').value=leadName;toast('✅ Lead name saved');
+}
+async function syncNow(btn){
+  const icon=document.getElementById('sync-icon')||btn?.querySelector('svg');
+  if(icon)icon.classList.add('spin');
+  toast('🔄 Syncing from Google Sheets…');
+  await loadRemoteData();
+  if(icon)icon.classList.remove('spin');
 }
 
-function saveLeadName() {
-  leadName = document.getElementById('s-lead-name').value.trim();
-  localStorage.setItem('hitl_lead_name', leadName);
-  document.getElementById('f-lead').value = leadName;
-  toast('Lead name saved');
-}
-
-// ── Remote Sync — Sheet is the ONLY source of truth ──────────
-async function loadRemoteData() {
-  if (!scriptUrl) {
-    // No URL configured — show banner, render empty state
-    document.getElementById('config-banner').classList.remove('hidden');
-    renderDashboard(); renderActions(); renderInsights();
-    return;
-  }
-
-  // Show loading indicator in dashboard
-  const grid = document.getElementById('members-grid');
-  if (grid) grid.innerHTML = `<div class="empty-state"><p>⏳ Loading data from Google Sheets…</p></div>`;
-
-  try {
-    const [sr, ar] = await Promise.all([
-      fetch(scriptUrl + '?action=getAllSessions&_=' + Date.now()).then(r => r.json()),
-      fetch(scriptUrl + '?action=getActions&_='     + Date.now()).then(r => r.json())
+// ── Remote Sync ───────────────────────────────────────────────
+async function loadRemoteData(){
+  if(!scriptUrl){document.getElementById('config-banner').classList.remove('hidden');renderDashboard();renderActions();renderInsights();return}
+  const grid=document.getElementById('members-grid');
+  if(grid)grid.innerHTML=`<div class="empty-state"><p>⏳ Loading from Google Sheets…</p></div>`;
+  try{
+    const[sr,ar]=await Promise.all([
+      fetch(scriptUrl+'?action=getAllSessions&_='+Date.now()).then(r=>r.json()),
+      fetch(scriptUrl+'?action=getActions&_='+Date.now()).then(r=>r.json())
     ]);
-
-    sessions = (sr.ok && Array.isArray(sr.sessions)) ? sr.sessions : [];
-    actions  = (ar.ok && Array.isArray(ar.actions))  ? ar.actions  : [];
-
-    renderDashboard();
-    renderActions();
-    renderInsights();
-  } catch(e) {
-    console.error('Remote load failed:', e);
-    if (grid) grid.innerHTML = `<div class="empty-state"><p>❌ Could not load data. Check your Apps Script URL in Settings.</p></div>`;
-  }
+    sessions=(sr.ok&&Array.isArray(sr.sessions))?sr.sessions:[];
+    actions=(ar.ok&&Array.isArray(ar.actions))?ar.actions:[];
+    renderDashboard();renderActions();renderInsights();
+  }catch(e){console.error(e);if(grid)grid.innerHTML=`<div class="empty-state"><div class="es-icon">❌</div><p>Could not load data. Check your Apps Script URL in Settings.</p></div>`}
+}
+async function api(action,payload){
+  const encoded=encodeURIComponent(JSON.stringify(payload));
+  const url=`${scriptUrl}?action=${action}&data=${encoded}&_=${Date.now()}`;
+  const res=await fetch(url);return res.json();
 }
 
-async function api(action, payload) {
-  const encoded = encodeURIComponent(JSON.stringify(payload));
-  const url     = `${scriptUrl}?action=${action}&data=${encoded}&_=${Date.now()}`;
-  const res     = await fetch(url);
-  return res.json();
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 
 // ── Helpers ───────────────────────────────────────────────────
-function resetForm() {
-  ['f-lead','f-member','f-pos-eff','f-pos-qual','f-pos-leave','f-pos-break',
-   'f-sc-eff','f-sc-qual','f-sc-leave','f-sc-break','f-process','f-ops',
-   'f-team','f-personal-goals','f-personal-support','f-one-change','f-overall']
-    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  if (leadName) document.getElementById('f-lead').value = leadName;
-  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
-  selectedMood = ''; selectedRating = 0;
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('on'));
-  document.querySelectorAll('.rating-label-btn').forEach(b => b.classList.remove('on'));
-  document.getElementById('goals-list').innerHTML = '';
-  document.getElementById('new-action-list').innerHTML = '';
-  goalRows = []; actionRows = [];
-  addGoalRow(); addActionRow();
+function resetForm(){
+  ['f-lead','f-member','f-positives','f-shortcomings','f-process','f-ops','f-team',
+   'f-personal-goals','f-personal-support','f-one-change','f-overall']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+  if(leadName)document.getElementById('f-lead').value=leadName;
+  document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
+  selectedMood='';selectedRating=0;
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.rating-label-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('goals-list').innerHTML='';
+  document.getElementById('new-action-list').innerHTML='';
+  goalRows=[];actionRows=[];addGoalRow();addActionRow();
   document.getElementById('history-panel').classList.add('hidden');
   switchTab(0);
 }
 
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+// ══════════════════════════════════════════════════════════════
+// ── FEATURE 1: SESSION COMPLETION TRACKER ────────────────────
+// ══════════════════════════════════════════════════════════════
+// All 25 HITL team members — update this list as team changes
+const ALL_MEMBERS = {
+  'Krishna Prasad': ['CBE'],
+  'Preethi V':      ['CBE'],
+  'Pooja Panda':    ['HYD'],
+  // Add all 25 members below — format: 'Full Name': ['Location']
+  // Leads will add their team members here
+};
+
+// Derive unique leads from sessions
+function getLeads(){ return [...new Set(sessions.map(s=>s.leadName).filter(Boolean))]; }
+
+function renderTracker(){
+  const leadFilter  = document.getElementById('tracker-lead-filter')?.value||'';
+  const statusFilter= document.getElementById('tracker-status-filter')?.value||'';
+
+  // Populate lead filter dropdown
+  const leads = getLeads();
+  const lsel  = document.getElementById('tracker-lead-filter');
+  if(lsel){
+    const cur=lsel.value;
+    lsel.innerHTML='<option value="">All Leads</option>'+leads.map(l=>`<option ${l===cur?'selected':''}>${l}</option>`).join('');
+  }
+
+  // Build: which members have sessions (grouped by lead)
+  const byLead={};
+  sessions.forEach(s=>{
+    if(!byLead[s.leadName])byLead[s.leadName]=new Set();
+    byLead[s.leadName].add(s.memberName);
+  });
+
+  // Overall progress using session data
+  const allDoneMembers=[...new Set(sessions.map(s=>s.memberName).filter(Boolean))];
+  const filtLeads=leadFilter?leads.filter(l=>l===leadFilter):leads;
+
+  // Count sessions per lead
+  const totalSessions=sessions.filter(s=>!leadFilter||s.leadName===leadFilter).length;
+  const uniqueMembers=[...new Set(sessions.filter(s=>!leadFilter||s.leadName===leadFilter).map(s=>s.memberName))].length;
+
+  document.getElementById('tracker-pct').textContent=uniqueMembers+' members';
+  document.getElementById('tracker-bar').style.width=Math.min(uniqueMembers/25*100,100).toFixed(0)+'%';
+  document.getElementById('tracker-summary').textContent=`${uniqueMembers} of 25 members have sessions · ${totalSessions} total sessions recorded`;
+
+  // Build cards per lead
+  const leadsToShow=leadFilter?[leadFilter]:leads;
+  const grid=document.getElementById('tracker-grid');
+  if(!leadsToShow.length){grid.innerHTML='<div class="empty-state"><div class="es-icon">👥</div><p>No sessions yet. Add sessions to see the tracker.</p></div>';return}
+
+  const leadColors=['#00B2A9','#FF6B2B','#7c3aed','#2563eb','#d97706'];
+  grid.innerHTML=leadsToShow.map((lead,li)=>{
+    const membersDone=[...new Set(sessions.filter(s=>s.leadName===lead).map(s=>s.memberName))];
+    const filtered=statusFilter==='done'?membersDone:statusFilter==='pending'?[]:membersDone;
+    const color=leadColors[li%leadColors.length];
+    const sessionCount=sessions.filter(s=>s.leadName===lead).length;
+
+    const rows=membersDone
+      .filter(m=>!statusFilter||statusFilter==='done')
+      .map(m=>{
+        const ms=sessions.filter(s=>s.leadName===lead&&s.memberName===m);
+        const latest=ms[ms.length-1];
+        const openA=actions.filter(a=>a.memberName===m&&a.status!=='Done'&&a.status!=='Deleted').length;
+        return `<div class="tracker-member-row">
+          <span class="tm-name">${m}</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            ${latest?.current_rating?`<span style="font-size:11px;font-weight:700;color:${color}">★ ${latest.current_rating}</span>`:''}
+            ${openA?`<span class="badge badge-pending" style="font-size:10px">🎯 ${openA}</span>`:''}
+            <span class="badge badge-done" style="font-size:10px">✅ Done</span>
+            <button onclick="openMemberView('${sessions.filter(s=>s.leadName===lead&&s.memberName===m).slice(-1)[0]?.sessionId}')" style="background:none;border:none;cursor:pointer;font-size:11px;color:#007a74;font-weight:600;padding:2px 6px;border-radius:4px;text-decoration:underline">View</button>
+          </div>
+        </div>`;
+      }).join('');
+
+    return `<div class="tracker-lead-block anim-fade-up">
+      <div class="tracker-lead-header" style="background:${color}">
+        <div>
+          <div class="tracker-lead-name">${lead}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px">${membersDone.length} member${membersDone.length!==1?'s':''} · ${sessionCount} session${sessionCount!==1?'s':''}</div>
+        </div>
+        <div style="font-size:22px;font-weight:800;color:#fff">${membersDone.length}</div>
+      </div>
+      ${rows||'<div style="padding:1rem;font-size:13px;color:var(--muted);text-align:center">No sessions yet</div>'}
+    </div>`;
+  }).join('');
 }
+
+// ══════════════════════════════════════════════════════════════
+// ── FEATURE 2: CARRY-FORWARD ACTION ITEMS ────────────────────
+// ══════════════════════════════════════════════════════════════
+function renderCarryForward(memberName){
+  const openActions=actions.filter(a=>
+    a.memberName&&a.memberName.toLowerCase()===memberName.toLowerCase()&&
+    a.status!=='Done'&&a.status!=='Deleted'
+  );
+
+  const container=document.getElementById('carry-forward-section');
+  if(!container)return;
+
+  if(!openActions.length){container.classList.add('hidden');return}
+
+  container.classList.remove('hidden');
+  document.getElementById('carry-items').innerHTML=openActions.map(a=>`
+    <div class="carry-item">
+      <input type="checkbox" class="carry-checkbox" id="carry_${a.actionId}"
+        onchange="toggleCarryItem('${a.actionId}',this.checked)" checked/>
+      <label for="carry_${a.actionId}">
+        <strong>${a.description}</strong>
+        <span style="color:var(--muted);font-size:11px;margin-left:6px">from ${a.quarter||'previous period'}</span>
+      </label>
+      <span class="carry-owner">${a.owner||'Lead'}</span>
+    </div>`).join('');
+}
+
+// Store which carry-forward items to include in the new session
+let carryForwardSelected={};
+function toggleCarryItem(actionId,checked){
+  carryForwardSelected[actionId]=checked;
+}
+
+function onMemberInputWithCarry(){
+  onMemberInput(); // existing history panel logic
+  const name=document.getElementById('f-member').value.trim();
+  if(name) renderCarryForward(name);
+  else {
+    const c=document.getElementById('carry-forward-section');
+    if(c)c.classList.add('hidden');
+  }
+  carryForwardSelected={};
+}
+
 </script>
 </body>
 </html>
