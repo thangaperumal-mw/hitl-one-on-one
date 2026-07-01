@@ -268,7 +268,7 @@ h3.agenda-title .step{width:26px;height:26px;background:linear-gradient(135deg,#
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Dashboard
     </button>
-    <button onclick="currentViewSessionId=null;resetForm();showPage('form')">
+    <button onclick="goToForm()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
       New Session
     </button>
@@ -312,7 +312,7 @@ h3.agenda-title .step{width:26px;height:26px;background:linear-gradient(135deg,#
       </h1>
       <p>All leads · All members · Real-time sync</p>
     </div>
-    <button class="btn btn-accent" onclick="currentViewSessionId=null;resetForm();showPage('form')">
+    <button class="btn btn-accent" onclick="goToForm()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
       New Session
     </button>
@@ -740,6 +740,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(scriptUrl){document.getElementById('s-url').value=scriptUrl;document.getElementById('config-banner').classList.add('hidden')}
   addGoalRow();addActionRow();
   attachDraftListeners();
+  restoreFromBackup(); // restore if page was refreshed mid-session
   loadRemoteData();
 });
 
@@ -750,19 +751,27 @@ function showPage(name){
   document.getElementById('page-'+name).classList.add('active');
   const map=['dashboard','form','tracker','actions','insights','settings','view'];
   document.querySelectorAll('.nav-links button')[map.indexOf(name)]?.classList.add('active');
+  // Render data pages — NEVER reset or touch the form when navigating
   if(name==='dashboard') renderDashboard();
   if(name==='actions')   renderActions();
   if(name==='insights')  renderInsights();
   if(name==='tracker')   renderTracker();
-  if(name==='form'){
-    // Restore draft if one exists and we're not starting fresh
-    const hasDraft = sessionStorage.getItem(DRAFT_KEY);
-    if(hasDraft && currentViewSessionId===null){
-      restoreDraft();
-      // Show a subtle indicator that draft was restored
-      const indicator = document.getElementById('draft-indicator');
-      if(indicator){ indicator.classList.remove('hidden'); setTimeout(()=>indicator.classList.add('hidden'),3000); }
-    }
+}
+
+// Go to form — only resets if form is truly empty or session was just submitted
+function goToForm(forceReset){
+  if(forceReset){
+    currentViewSessionId=null;
+    resetForm();
+  }
+  showPage('form');
+  // Show draft indicator if form has content
+  const member=document.getElementById('f-member')?.value;
+  const hasContent=member||document.getElementById('f-positives')?.value||document.getElementById('f-one-change')?.value;
+  const indicator=document.getElementById('draft-indicator');
+  if(indicator){
+    if(hasContent && !forceReset) indicator.classList.remove('hidden');
+    else indicator.classList.add('hidden');
   }
 }
 function switchTab(n){
@@ -1215,113 +1224,94 @@ function toast(msg){
 
 // ── Helpers ───────────────────────────────────────────────────
 
-// Draft field IDs — all text fields in the form
-const DRAFT_FIELDS = [
-  'f-lead','f-member','f-date','f-quarter',
-  'f-positives','f-shortcomings',
-  'f-process','f-ops','f-team',
-  'f-personal-goals','f-personal-support',
-  'f-one-change','f-overall'
-];
+// ── Form Persistence ─────────────────────────────────────────
+// The form page is NEVER destroyed on navigation — showPage() only
+// toggles CSS visibility (display:none/block). So all typed values
+// stay in the DOM elements naturally without any save/restore logic.
+// sessionStorage is used only as a backup for accidental page refresh.
+
 const DRAFT_KEY = 'hitl_form_draft';
 
-// Save current form state to sessionStorage on every input
 function saveDraft(){
-  const draft = {};
-  DRAFT_FIELDS.forEach(id => {
-    const el = document.getElementById(id);
-    if(el) draft[id] = el.value;
-  });
-  draft._mood   = selectedMood;
-  draft._rating = selectedRating;
-  draft._tab    = currentTab;
-
-  // Save goals
-  const goals = collectGoals();
-  draft._goals = goals;
-
-  // Save action rows
-  const acts = Array.from(document.querySelectorAll('#new-action-list .action-item')).map(r=>{
-    const inputs = r.querySelectorAll('input,select');
-    return { desc: inputs[0]?.value||'', owner: inputs[1]?.value||'Lead', due: inputs[2]?.value||'', status: inputs[3]?.value||'Open' };
-  }).filter(a=>a.desc);
-  draft._actions = acts;
-
-  sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  try{
+    const d={};
+    ['f-lead','f-member','f-date','f-quarter','f-positives','f-shortcomings',
+     'f-process','f-ops','f-team','f-personal-goals','f-personal-support',
+     'f-one-change','f-overall'].forEach(id=>{
+      const el=document.getElementById(id);if(el)d[id]=el.value;
+    });
+    d._mood=selectedMood; d._rating=selectedRating; d._tab=currentTab;
+    d._goals=collectGoals();
+    d._acts=Array.from(document.querySelectorAll('#new-action-list .action-item')).map(r=>{
+      const i=r.querySelectorAll('input,select');
+      return{desc:i[0]?.value||'',owner:i[1]?.value||'Lead',due:i[2]?.value||'',status:i[3]?.value||'Open'};
+    }).filter(a=>a.desc);
+    sessionStorage.setItem(DRAFT_KEY,JSON.stringify(d));
+  }catch(e){}
 }
 
-// Restore draft into form fields
-function restoreDraft(){
-  const raw = sessionStorage.getItem(DRAFT_KEY);
-  if(!raw) return false;
+function clearDraft(){ sessionStorage.removeItem(DRAFT_KEY); }
+
+// Called only on page refresh — restores from sessionStorage backup
+function restoreFromBackup(){
   try{
-    const draft = JSON.parse(raw);
-
-    DRAFT_FIELDS.forEach(id => {
-      const el = document.getElementById(id);
-      if(el && draft[id] !== undefined) el.value = draft[id];
+    const raw=sessionStorage.getItem(DRAFT_KEY);
+    if(!raw)return;
+    const d=JSON.parse(raw);
+    ['f-lead','f-member','f-date','f-quarter','f-positives','f-shortcomings',
+     'f-process','f-ops','f-team','f-personal-goals','f-personal-support',
+     'f-one-change','f-overall'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el&&d[id]!==undefined)el.value=d[id];
     });
-
-    if(draft._mood)   setMood(draft._mood);
-    if(draft._rating) setRating(parseInt(draft._rating));
-
-    // Restore goals
-    if(draft._goals && draft._goals.length){
+    if(d._mood)setMood(d._mood);
+    if(d._rating)setRating(parseInt(d._rating));
+    // Restore goals using addGoalRow helper to avoid innerHTML issues
+    if(d._goals&&d._goals.length){
       document.getElementById('goals-list').innerHTML='';
       goalRows=[];
-      draft._goals.forEach(g=>{
-        const id='goal_'+Date.now()+Math.random();
-        goalRows.push(id);
-        const div=document.createElement('div');
-        div.className='goal-row';div.id=id;
-        div.innerHTML=`<textarea style="min-height:36px;height:36px">${g.goal||''}</textarea><select><option value="">Status</option><option ${g.status==='On Track'?'selected':''}>On Track</option><option ${g.status==='Completed'?'selected':''}>Completed</option><option ${g.status==='Not Yet Started'?'selected':''}>Not Yet Started</option><option ${g.status==='Delayed'?'selected':''}>Delayed</option><option ${g.status==='At Risk'?'selected':''}>At Risk</option><option ${g.status==='Need Review'?'selected':''}>Need Review</option></select><button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeGoalRow('${id}')">✕</button>`;
-        document.getElementById('goals-list').appendChild(div);
-        div.querySelector('textarea').addEventListener('input', saveDraft);
+      d._goals.forEach(g=>{
+        addGoalRow();
+        const rows=document.querySelectorAll('.goal-row');
+        const last=rows[rows.length-1];
+        if(last){
+          last.querySelector('textarea').value=g.goal||'';
+          last.querySelector('select').value=g.status||'';
+        }
       });
     }
-
-    // Restore action items
-    if(draft._actions && draft._actions.length){
+    // Restore action items using addActionRow helper
+    if(d._acts&&d._acts.length){
       document.getElementById('new-action-list').innerHTML='';
       actionRows=[];
-      draft._actions.forEach(a=>{
-        const id='arow_'+Date.now()+Math.random();
-        actionRows.push(id);
-        const div=document.createElement('div');
-        div.className='action-item';div.id=id;
-        div.style='grid-template-columns:1fr auto auto auto auto';
-        div.innerHTML=`<input type="text" value="${a.desc}" style="border:none;background:transparent;font-size:13px;outline:none;width:100%;font-family:inherit"/><select style="border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:12px;background:#fff;font-family:inherit;outline:none;cursor:pointer"><option ${a.owner==='Lead'?'selected':''}>Lead</option><option ${a.owner==='Member'?'selected':''}>Member</option><option ${a.owner==='Both'?'selected':''}>Both</option></select><input type="date" value="${a.due}" style="border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:12px;width:130px"/><select class="status-sel" style="border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:12px;background:#fff;font-family:inherit;outline:none;cursor:pointer"><option ${a.status==='Open'?'selected':''}>Open</option><option ${a.status==='In Progress'?'selected':''}>In Progress</option><option ${a.status==='Done'?'selected':''}>Done</option></select><button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeActionRow('${id}')">✕</button>`;
-        document.getElementById('new-action-list').appendChild(div);
-        div.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',saveDraft));
+      d._acts.forEach(a=>{
+        addActionRow();
+        const rows=document.querySelectorAll('#new-action-list .action-item');
+        const last=rows[rows.length-1];
+        if(last){
+          const inputs=last.querySelectorAll('input,select');
+          if(inputs[0])inputs[0].value=a.desc||'';
+          if(inputs[1])inputs[1].value=a.owner||'Lead';
+          if(inputs[2])inputs[2].value=a.due||'';
+          if(inputs[3])inputs[3].value=a.status||'Open';
+        }
       });
     }
-
-    // Re-trigger member history + carry-forward
-    const member = document.getElementById('f-member')?.value;
-    if(member){ onMemberInput(); renderCarryForward(member); }
-
-    // Restore last active tab
-    if(draft._tab !== undefined) switchTab(draft._tab);
-
-    return true;
-  }catch(e){
-    console.warn('Draft restore failed',e);
-    return false;
-  }
+    const member=document.getElementById('f-member')?.value;
+    if(member){onMemberInput();renderCarryForward(member);}
+    if(d._tab!==undefined)switchTab(d._tab);
+    const ind=document.getElementById('draft-indicator');
+    if(ind)ind.classList.remove('hidden');
+  }catch(e){console.warn('Draft restore:',e);}
 }
 
-function clearDraft(){
-  sessionStorage.removeItem(DRAFT_KEY);
-}
-
-// Attach saveDraft listeners to all text fields
 function attachDraftListeners(){
-  DRAFT_FIELDS.forEach(id=>{
+  ['f-lead','f-member','f-date','f-quarter','f-positives','f-shortcomings',
+   'f-process','f-ops','f-team','f-personal-goals','f-personal-support',
+   'f-one-change','f-overall'].forEach(id=>{
     const el=document.getElementById(id);
-    if(el) el.addEventListener('input', saveDraft);
-    if(el && el.tagName==='SELECT') el.addEventListener('change', saveDraft);
+    if(el){el.addEventListener('input',saveDraft);el.addEventListener('change',saveDraft);}
   });
-  // Mood and rating buttons already call setMood/setRating which we patch below
 }
 
 function resetForm(){
