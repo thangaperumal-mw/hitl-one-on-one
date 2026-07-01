@@ -379,6 +379,12 @@ h3.agenda-title .step{width:26px;height:26px;background:linear-gradient(135deg,#
     <div id="history-entries"></div>
   </div>
 
+  <!-- Draft restored indicator -->
+  <div id="draft-indicator" class="hidden" style="background:linear-gradient(135deg,#e0f7f6,#b2ebe8);border:1.5px solid #00B2A9;border-radius:var(--radius);padding:.65rem 1.1rem;margin-bottom:.75rem;font-size:13px;font-weight:600;color:#007a74;display:flex;align-items:center;justify-content:space-between;gap:1rem">
+    <span>✏️ Draft restored — your unsaved inputs are back</span>
+    <button onclick="clearDraft();resetForm();toast('Draft cleared')" style="background:none;border:none;font-size:12px;color:#007a74;cursor:pointer;text-decoration:underline;font-family:inherit">Clear draft</button>
+  </div>
+
   <!-- Carry-Forward Actions Panel -->
   <div id="carry-forward-section" class="carry-section hidden">
     <h4>
@@ -733,6 +739,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
   if(scriptUrl){document.getElementById('s-url').value=scriptUrl;document.getElementById('config-banner').classList.add('hidden')}
   addGoalRow();addActionRow();
+  attachDraftListeners();
   loadRemoteData();
 });
 
@@ -747,6 +754,16 @@ function showPage(name){
   if(name==='actions')   renderActions();
   if(name==='insights')  renderInsights();
   if(name==='tracker')   renderTracker();
+  if(name==='form'){
+    // Restore draft if one exists and we're not starting fresh
+    const hasDraft = sessionStorage.getItem(DRAFT_KEY);
+    if(hasDraft && currentViewSessionId===null){
+      restoreDraft();
+      // Show a subtle indicator that draft was restored
+      const indicator = document.getElementById('draft-indicator');
+      if(indicator){ indicator.classList.remove('hidden'); setTimeout(()=>indicator.classList.add('hidden'),3000); }
+    }
+  }
 }
 function switchTab(n){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.add('hidden'));
@@ -896,8 +913,8 @@ function editCurrentSession(){
 }
 
 // ── Mood & Rating ─────────────────────────────────────────────
-function setMood(m){selectedMood=m;document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('on',b.getAttribute('data-mood')===m))}
-function setRating(n){selectedRating=n;document.getElementById('f-rating').value=n;document.querySelectorAll('.rating-label-btn').forEach(b=>b.classList.toggle('on',parseInt(b.getAttribute('data-value'))===n))}
+function setMood(m){selectedMood=m;document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('on',b.getAttribute('data-mood')===m));saveDraft();}
+function setRating(n){selectedRating=n;document.getElementById('f-rating').value=n;document.querySelectorAll('.rating-label-btn').forEach(b=>b.classList.toggle('on',parseInt(b.getAttribute('data-value'))===n));saveDraft();}
 
 // ── Goals ─────────────────────────────────────────────────────
 function addGoalRow(){
@@ -905,6 +922,8 @@ function addGoalRow(){
   const div=document.createElement('div');div.className='goal-row';div.id=id;
   div.innerHTML=`<textarea placeholder="GPS goal description…" style="min-height:36px;height:36px"></textarea><select><option value="">Status</option><option>On Track</option><option>Completed</option><option>Not Yet Started</option><option>Delayed</option><option>At Risk</option><option>Need Review</option></select><button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeGoalRow('${id}')">✕</button>`;
   document.getElementById('goals-list').appendChild(div);
+  div.querySelector('textarea').addEventListener('input',saveDraft);
+  div.querySelector('select').addEventListener('change',saveDraft);
 }
 function removeGoalRow(id){document.getElementById(id)?.remove();goalRows=goalRows.filter(r=>r!==id)}
 function collectGoals(){return Array.from(document.querySelectorAll('.goal-row')).map(r=>({goal:r.querySelector('textarea').value,status:r.querySelector('select').value})).filter(g=>g.goal)}
@@ -962,6 +981,7 @@ async function submitSession(){
     for(const a of newActs)await api('saveAction',a);
     toast('✅ Saved & synced — all leads can see this now');
     const wasEditing=currentViewSessionId;
+    clearDraft(); // wipe draft after successful save
     resetForm();
     await loadRemoteData();
     if(wasEditing){const updated=sessions.find(x=>x.sessionId===wasEditing);if(updated){currentViewSessionId=wasEditing;renderViewPage(updated);showPage('view')}else showPage('dashboard')}
@@ -1194,7 +1214,118 @@ function toast(msg){
 }
 
 // ── Helpers ───────────────────────────────────────────────────
+
+// Draft field IDs — all text fields in the form
+const DRAFT_FIELDS = [
+  'f-lead','f-member','f-date','f-quarter',
+  'f-positives','f-shortcomings',
+  'f-process','f-ops','f-team',
+  'f-personal-goals','f-personal-support',
+  'f-one-change','f-overall'
+];
+const DRAFT_KEY = 'hitl_form_draft';
+
+// Save current form state to sessionStorage on every input
+function saveDraft(){
+  const draft = {};
+  DRAFT_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) draft[id] = el.value;
+  });
+  draft._mood   = selectedMood;
+  draft._rating = selectedRating;
+  draft._tab    = currentTab;
+
+  // Save goals
+  const goals = collectGoals();
+  draft._goals = goals;
+
+  // Save action rows
+  const acts = Array.from(document.querySelectorAll('#new-action-list .action-item')).map(r=>{
+    const inputs = r.querySelectorAll('input,select');
+    return { desc: inputs[0]?.value||'', owner: inputs[1]?.value||'Lead', due: inputs[2]?.value||'', status: inputs[3]?.value||'Open' };
+  }).filter(a=>a.desc);
+  draft._actions = acts;
+
+  sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+}
+
+// Restore draft into form fields
+function restoreDraft(){
+  const raw = sessionStorage.getItem(DRAFT_KEY);
+  if(!raw) return false;
+  try{
+    const draft = JSON.parse(raw);
+
+    DRAFT_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if(el && draft[id] !== undefined) el.value = draft[id];
+    });
+
+    if(draft._mood)   setMood(draft._mood);
+    if(draft._rating) setRating(parseInt(draft._rating));
+
+    // Restore goals
+    if(draft._goals && draft._goals.length){
+      document.getElementById('goals-list').innerHTML='';
+      goalRows=[];
+      draft._goals.forEach(g=>{
+        const id='goal_'+Date.now()+Math.random();
+        goalRows.push(id);
+        const div=document.createElement('div');
+        div.className='goal-row';div.id=id;
+        div.innerHTML=`<textarea style="min-height:36px;height:36px">${g.goal||''}</textarea><select><option value="">Status</option><option ${g.status==='On Track'?'selected':''}>On Track</option><option ${g.status==='Completed'?'selected':''}>Completed</option><option ${g.status==='Not Yet Started'?'selected':''}>Not Yet Started</option><option ${g.status==='Delayed'?'selected':''}>Delayed</option><option ${g.status==='At Risk'?'selected':''}>At Risk</option><option ${g.status==='Need Review'?'selected':''}>Need Review</option></select><button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeGoalRow('${id}')">✕</button>`;
+        document.getElementById('goals-list').appendChild(div);
+        div.querySelector('textarea').addEventListener('input', saveDraft);
+      });
+    }
+
+    // Restore action items
+    if(draft._actions && draft._actions.length){
+      document.getElementById('new-action-list').innerHTML='';
+      actionRows=[];
+      draft._actions.forEach(a=>{
+        const id='arow_'+Date.now()+Math.random();
+        actionRows.push(id);
+        const div=document.createElement('div');
+        div.className='action-item';div.id=id;
+        div.style='grid-template-columns:1fr auto auto auto auto';
+        div.innerHTML=`<input type="text" value="${a.desc}" style="border:none;background:transparent;font-size:13px;outline:none;width:100%;font-family:inherit"/><select style="border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:12px;background:#fff;font-family:inherit;outline:none;cursor:pointer"><option ${a.owner==='Lead'?'selected':''}>Lead</option><option ${a.owner==='Member'?'selected':''}>Member</option><option ${a.owner==='Both'?'selected':''}>Both</option></select><input type="date" value="${a.due}" style="border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:12px;width:130px"/><select class="status-sel" style="border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:12px;background:#fff;font-family:inherit;outline:none;cursor:pointer"><option ${a.status==='Open'?'selected':''}>Open</option><option ${a.status==='In Progress'?'selected':''}>In Progress</option><option ${a.status==='Done'?'selected':''}>Done</option></select><button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="removeActionRow('${id}')">✕</button>`;
+        document.getElementById('new-action-list').appendChild(div);
+        div.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',saveDraft));
+      });
+    }
+
+    // Re-trigger member history + carry-forward
+    const member = document.getElementById('f-member')?.value;
+    if(member){ onMemberInput(); renderCarryForward(member); }
+
+    // Restore last active tab
+    if(draft._tab !== undefined) switchTab(draft._tab);
+
+    return true;
+  }catch(e){
+    console.warn('Draft restore failed',e);
+    return false;
+  }
+}
+
+function clearDraft(){
+  sessionStorage.removeItem(DRAFT_KEY);
+}
+
+// Attach saveDraft listeners to all text fields
+function attachDraftListeners(){
+  DRAFT_FIELDS.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('input', saveDraft);
+    if(el && el.tagName==='SELECT') el.addEventListener('change', saveDraft);
+  });
+  // Mood and rating buttons already call setMood/setRating which we patch below
+}
+
 function resetForm(){
+  clearDraft(); // wipe draft on deliberate reset
   ['f-lead','f-member','f-positives','f-shortcomings','f-process','f-ops','f-team',
    'f-personal-goals','f-personal-support','f-one-change','f-overall']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
@@ -1207,6 +1338,8 @@ function resetForm(){
   document.getElementById('new-action-list').innerHTML='';
   goalRows=[];actionRows=[];addGoalRow();addActionRow();
   document.getElementById('history-panel').classList.add('hidden');
+  const c=document.getElementById('carry-forward-section');
+  if(c)c.classList.add('hidden');
   switchTab(0);
 }
 
