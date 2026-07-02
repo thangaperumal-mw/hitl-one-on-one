@@ -1212,15 +1212,13 @@ async function loadRemoteData(){
   }
 }
 async function api(action,payload){
-  // Always POST — avoids encodeURIComponent URI malformed errors on special chars,
-  // long text, Tamil/regional text, emoji, ampersands, and percent signs.
-  // text/plain header avoids CORS preflight — works cross-origin with Apps Script.
-  const url=`${scriptUrl}?action=${action}&_=${Date.now()}`;
-  const res=await fetch(url,{
-    method:'POST',
-    body:JSON.stringify(payload),
-    headers:{'Content-Type':'text/plain'}
-  });
+  // Use GET with btoa encoding — handles ALL special chars, Tamil text,
+  // emoji, ampersands, percent signs without URI malformed errors.
+  // btoa converts to base64 which is URL-safe after encodeURIComponent.
+  const json   = JSON.stringify(payload);
+  const b64    = btoa(unescape(encodeURIComponent(json)));
+  const url    = `${scriptUrl}?action=${action}&data=${b64}&enc=b64&_=${Date.now()}`;
+  const res    = await fetch(url);
   return res.json();
 }
 
