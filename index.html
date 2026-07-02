@@ -1212,9 +1212,32 @@ async function loadRemoteData(){
   }
 }
 async function api(action,payload){
-  const encoded=encodeURIComponent(JSON.stringify(payload));
-  const url=`${scriptUrl}?action=${action}&data=${encoded}&_=${Date.now()}`;
-  const res=await fetch(url);return res.json();
+  const json=JSON.stringify(payload);
+
+  // Try GET first (works for small payloads)
+  // Fall back to POST with plain text body for large/special-char payloads
+  // Apps Script accepts both — doGet reads URL param, doPost reads body
+  try{
+    const encoded=encodeURIComponent(json);
+    // URL limit ~7000 chars to be safe
+    if(encoded.length<7000){
+      const url=`${scriptUrl}?action=${action}&data=${encoded}&_=${Date.now()}`;
+      const res=await fetch(url);
+      return res.json();
+    }
+  }catch(e){
+    // encodeURIComponent failed (malformed URI) or URL too long — fall through to POST
+    console.warn('GET encode failed, switching to POST',e.message);
+  }
+
+  // POST fallback — sends JSON body as text/plain to avoid CORS preflight
+  const url=`${scriptUrl}?action=${action}&_=${Date.now()}`;
+  const res=await fetch(url,{
+    method:'POST',
+    body:json,
+    headers:{'Content-Type':'text/plain'}
+  });
+  return res.json();
 }
 
 function toast(msg){
