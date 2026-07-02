@@ -1212,13 +1212,14 @@ async function loadRemoteData(){
   }
 }
 async function api(action,payload){
-  // Use GET with btoa encoding — handles ALL special chars, Tamil text,
-  // emoji, ampersands, percent signs without URI malformed errors.
-  // btoa converts to base64 which is URL-safe after encodeURIComponent.
-  const json   = JSON.stringify(payload);
-  const b64    = btoa(unescape(encodeURIComponent(json)));
-  const url    = `${scriptUrl}?action=${action}&data=${b64}&enc=b64&_=${Date.now()}`;
-  const res    = await fetch(url);
+  // Encode payload as base64 then URL-encode it so +/= don't corrupt the param.
+  // btoa(unescape(encodeURIComponent())) safely handles all Unicode / Tamil / emoji.
+  const json  = JSON.stringify(payload);
+  const b64   = btoa(unescape(encodeURIComponent(json)));
+  // Must encodeURIComponent the base64 itself — + and = in b64 break URL params
+  const safe  = encodeURIComponent(b64);
+  const url   = `${scriptUrl}?action=${action}&data=${safe}&enc=b64&_=${Date.now()}`;
+  const res   = await fetch(url);
   return res.json();
 }
 
